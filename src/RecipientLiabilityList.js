@@ -1,15 +1,17 @@
 import { DeleteIcon } from "@chakra-ui/icons";
 import { Input, Button, IconButton, Th, Tr, Td } from "@chakra-ui/react";
-import { useMemo, useState } from "react";
+import { useContext, useMemo, useState } from "react";
 import CurrencyInput from "react-currency-input-field";
 import { LialibilityTable } from "./LialibilityTable";
 import { getItemById, removeItemById } from "./util";
 import { LialibilitySelect } from "./LiabilitySelect";
+import { LialibilityTypeListContext } from "./LialibilityTypeListContext";
 
-function RecipientLiabilityItem({ liability, onUpdate, onRemove, jenisList }) {
+function RecipientLiabilityItem({ liability, onUpdate, onRemove }) {
+  const liabilityTypeList = useContext(LialibilityTypeListContext);
   return (
     <Tr key={liability.id}>
-      <Td>{getItemById(jenisList, liability.id).nama}</Td>
+      <Td>{getItemById(liabilityTypeList, liability.id).nama}</Td>
       <Td>
         <Input
           as={CurrencyInput}
@@ -34,7 +36,7 @@ function RecipientLiabilityItem({ liability, onUpdate, onRemove, jenisList }) {
   );
 }
 
-function RecipientLiabilityAdder({ jenisList, onAdd }) {
+function RecipientLiabilityAdder({ typeList, onAdd }) {
   const [selectedJenis, setSelectedJenis] = useState("");
   return (
     <Tr>
@@ -42,7 +44,7 @@ function RecipientLiabilityAdder({ jenisList, onAdd }) {
         <LialibilitySelect
           value={selectedJenis}
           onValueChange={(e) => setSelectedJenis(e.target.value)}
-          jenisList={jenisList}
+          jenisList={typeList}
         />
       </Th>
       <Th colSpan={2}>
@@ -62,14 +64,15 @@ function RecipientLiabilityAdder({ jenisList, onAdd }) {
   );
 }
 
-export function RecipientLiabilityList({ list, onUpdateList, jenisList }) {
-  const unusedJenisList = useMemo(
+export function RecipientLiabilityList({ list, onUpdateList }) {
+  const liabilityTypeList = useContext(LialibilityTypeListContext);
+  const unusedLialibilityTypeList = useMemo(
     () =>
-      jenisList.filter(
+      liabilityTypeList.filter(
         (jenis) =>
           list.findIndex((tanggungan) => tanggungan.id === jenis.id) === -1
       ),
-    [jenisList, list]
+    [liabilityTypeList, list]
   );
   return (
     <LialibilityTable
@@ -77,7 +80,6 @@ export function RecipientLiabilityList({ list, onUpdateList, jenisList }) {
         <RecipientLiabilityItem
           key={item.id}
           liability={item}
-          jenisList={jenisList}
           onUpdate={(fn) =>
             onUpdateList((draft) => {
               fn(getItemById(draft, item.id));
@@ -91,14 +93,14 @@ export function RecipientLiabilityList({ list, onUpdateList, jenisList }) {
         />
       ))}
       footer={
-        unusedJenisList.length > 0 && (
+        unusedLialibilityTypeList.length > 0 && (
           <RecipientLiabilityAdder
-            jenisList={unusedJenisList}
+            typeList={unusedLialibilityTypeList}
             onAdd={(jenis) =>
               onUpdateList((draft) => {
                 draft.push({
                   id: jenis,
-                  nominal: getItemById(jenisList, jenis).nominal,
+                  nominal: getItemById(liabilityTypeList, jenis).nominal,
                 });
               })
             }

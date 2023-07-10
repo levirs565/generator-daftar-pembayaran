@@ -10,10 +10,11 @@ import { useImmer } from "use-immer";
 import { generateId } from "./util";
 import { RecipientListTab } from "./RecipientListTab";
 import { LialibilityTypesTab } from "./LialibilityTypesTab";
+import { LialibilityTypeListContext } from "./LialibilityTypeListContext";
 
 function App() {
-  const [penerimaList, updatePenerimaList] = useImmer([]);
-  const [jenisList, updateJenisList] = useImmer([
+  const [recipientList, updateRecipientList] = useImmer([]);
+  const [lialibilityTypeList, updateLialibilityTypeList] = useImmer([
     {
       id: generateId(),
       nama: "Tanggungan 1",
@@ -35,16 +36,17 @@ function App() {
         </TabList>
         <TabPanels>
           <TabPanel>
-            <RecipientListTab
-              list={penerimaList}
-              jenisTanggunanList={jenisList}
-              onUpdateList={updatePenerimaList}
-            />
+            <LialibilityTypeListContext.Provider value={lialibilityTypeList}>
+              <RecipientListTab
+                list={recipientList}
+                onUpdateList={updateRecipientList}
+              />
+            </LialibilityTypeListContext.Provider>
           </TabPanel>
           <TabPanel>
             <LialibilityTypesTab
-              list={jenisList}
-              onUpdateList={updateJenisList}
+              list={lialibilityTypeList}
+              onUpdateList={updateLialibilityTypeList}
             />
           </TabPanel>
         </TabPanels>

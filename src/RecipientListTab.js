@@ -10,7 +10,7 @@ import {
 import { RecipientLiabilityList } from "./RecipientLiabilityList";
 import { generateId, getItemById } from "./util";
 
-function RecipientItem({ recipient, index, onUpdate, jenisTanggunanList }) {
+function RecipientItem({ recipient, index, onUpdate }) {
   return (
     <Card key={recipient.id}>
       <CardBody>
@@ -28,7 +28,6 @@ function RecipientItem({ recipient, index, onUpdate, jenisTanggunanList }) {
           <Heading size={"sm"}>Tanggungan</Heading>
           <RecipientLiabilityList
             list={recipient.tanggungan}
-            jenisList={jenisTanggunanList}
             onUpdateList={(fn) => {
               onUpdate((draft) => {
                 fn(draft.tanggungan);
@@ -41,7 +40,7 @@ function RecipientItem({ recipient, index, onUpdate, jenisTanggunanList }) {
   );
 }
 
-function RecipientList({ list, onUpdateList, jenisTanggunanList }) {
+function RecipientList({ list, onUpdateList }) {
   return (
     <VStack alignItems="stretch" gap={4}>
       {list.map((item, index) => (
@@ -54,7 +53,6 @@ function RecipientList({ list, onUpdateList, jenisTanggunanList }) {
               fn(getItemById(draft, item.id));
             })
           }
-          jenisTanggunanList={jenisTanggunanList}
         />
       ))}
     </VStack>
@@ -77,14 +75,10 @@ function RecipientAdder({ onAdd }) {
   );
 }
 
-export function RecipientListTab({ list, onUpdateList, jenisTanggunanList }) {
+export function RecipientListTab({ list, onUpdateList }) {
   return (
     <>
-      <RecipientList
-        list={list}
-        onUpdateList={onUpdateList}
-        jenisTanggunanList={jenisTanggunanList}
-      />
+      <RecipientList list={list} onUpdateList={onUpdateList} />
       <RecipientAdder
         onAdd={() =>
           onUpdateList((draft) => {
