@@ -5,6 +5,8 @@ import {
   TabPanels,
   Tab,
   TabPanel,
+  Flex,
+  Heading,
 } from "@chakra-ui/react";
 import { useImmer } from "use-immer";
 import { generateId } from "./util";
@@ -29,12 +31,30 @@ function App() {
 
   return (
     <ChakraProvider>
-      <Tabs>
-        <TabList position="sticky" top={0} zIndex={100} bg="white">
-          <Tab>Daftar Penerima</Tab>
-          <Tab>Jenis Tanggungan</Tab>
+      <header>
+        <Flex px={4} pt={4} pb={2} bg="pink.700" textColor="white">
+          <Heading size="md">Generator Daftar Pembayaran</Heading>
+        </Flex>
+      </header>
+      <Tabs colorScheme="pink" variant="soft-rounded">
+        <TabList
+          position="sticky"
+          top={0}
+          zIndex={100}
+          bg="pink.700"
+          px={4}
+          py={2}
+        >
+          <Tab textColor="white">Jenis Tanggungan</Tab>
+          <Tab textColor="white">Daftar Penerima</Tab>
         </TabList>
         <TabPanels>
+          <TabPanel>
+            <LialibilityTypesTab
+              list={lialibilityTypeList}
+              onUpdateList={updateLialibilityTypeList}
+            />
+          </TabPanel>
           <TabPanel>
             <LialibilityTypeListContext.Provider value={lialibilityTypeList}>
               <RecipientListTab
@@ -42,12 +62,6 @@ function App() {
                 onUpdateList={updateRecipientList}
               />
             </LialibilityTypeListContext.Provider>
-          </TabPanel>
-          <TabPanel>
-            <LialibilityTypesTab
-              list={lialibilityTypeList}
-              onUpdateList={updateLialibilityTypeList}
-            />
           </TabPanel>
         </TabPanels>
       </Tabs>
