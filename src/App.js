@@ -17,13 +17,13 @@ function App() {
   const [lialibilityTypeList, updateLialibilityTypeList] = useImmer([
     {
       id: generateId(),
-      nama: "Tanggungan 1",
-      nominal: 2500,
+      name: "Tanggungan 1",
+      amount: 2500,
     },
     {
       id: generateId(),
-      nama: "Tanggungan 2",
-      nominal: 4000,
+      name: "Tanggungan 2",
+      amount: 4000,
     },
   ]);
 

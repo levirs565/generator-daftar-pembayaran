@@ -17,20 +17,20 @@ function RecipientItem({ recipient, index, onUpdate }) {
         <VStack alignItems={"stretch"}>
           <Heading size={"sm"}>Penerima ke {index + 1}</Heading>
           <Input
-            value={recipient.nama}
+            value={recipient.name}
             placeholder="Nama Penerima"
             onChange={(e) =>
               onUpdate((draft) => {
-                draft.nama = e.target.value;
+                draft.name = e.target.value;
               })
             }
           />
           <Heading size={"sm"}>Tanggungan</Heading>
           <RecipientLiabilityList
-            list={recipient.tanggungan}
+            list={recipient.lialibilityList}
             onUpdateList={(fn) => {
               onUpdate((draft) => {
-                fn(draft.tanggungan);
+                fn(draft.lialibilityList);
               });
             }}
           />
@@ -84,8 +84,8 @@ export function RecipientListTab({ list, onUpdateList }) {
           onUpdateList((draft) => {
             draft.push({
               id: generateId(),
-              nama: "",
-              tanggungan: [],
+              name: "",
+              lialibilityList: [],
             });
           })
         }

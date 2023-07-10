@@ -9,11 +9,11 @@ function LialibilityTypeItem({ liability, onUpdate, onRemove }) {
     <Tr>
       <Td>
         <Input
-          value={liability.nama}
+          value={liability.name}
           placeholder="Nama"
           onChange={(e) =>
             onUpdate((draft) => {
-              draft.nama = e.target.value;
+              draft.name = e.target.value;
             })
           }
         />
@@ -22,10 +22,10 @@ function LialibilityTypeItem({ liability, onUpdate, onRemove }) {
         <Input
           as={CurrencyInput}
           intlConfig={{ locale: "id-ID", currency: "IDR" }}
-          value={liability.nominal}
+          value={liability.amount}
           onValueChange={(e) =>
             onUpdate((draft) => {
-              draft.nominal = parseInt(e);
+              draft.amount = parseInt(e);
             })
           }
         />
@@ -60,8 +60,8 @@ export function LialibilityTypesTab({ list, onUpdateList }) {
     onUpdateList((draft) => {
       draft.push({
         id: generateId(),
-        nama: "",
-        nominal: 0,
+        name: "",
+        amount: 0,
       });
     });
   }

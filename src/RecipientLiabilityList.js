@@ -11,15 +11,15 @@ function RecipientLiabilityItem({ liability, onUpdate, onRemove }) {
   const liabilityTypeList = useContext(LialibilityTypeListContext);
   return (
     <Tr key={liability.id}>
-      <Td>{getItemById(liabilityTypeList, liability.id).nama}</Td>
+      <Td>{getItemById(liabilityTypeList, liability.id).name}</Td>
       <Td>
         <Input
           as={CurrencyInput}
           intlConfig={{ locale: "id-ID", currency: "IDR" }}
-          value={liability.nominal}
+          value={liability.amount}
           onValueChange={(e) =>
             onUpdate((draft) => {
-              draft.nominal = parseInt(e);
+              draft.amount = parseInt(e);
             })
           }
         />
@@ -44,7 +44,7 @@ function RecipientLiabilityAdder({ typeList, onAdd }) {
         <LialibilitySelect
           value={selectedJenis}
           onValueChange={(e) => setSelectedJenis(e.target.value)}
-          jenisList={typeList}
+          typeList={typeList}
         />
       </Th>
       <Th colSpan={2}>
@@ -70,7 +70,7 @@ export function RecipientLiabilityList({ list, onUpdateList }) {
     () =>
       liabilityTypeList.filter(
         (jenis) =>
-          list.findIndex((tanggungan) => tanggungan.id === jenis.id) === -1
+          list.findIndex((lialibilityList) => lialibilityList.id === jenis.id) === -1
       ),
     [liabilityTypeList, list]
   );
@@ -100,7 +100,7 @@ export function RecipientLiabilityList({ list, onUpdateList }) {
               onUpdateList((draft) => {
                 draft.push({
                   id: jenis,
-                  nominal: getItemById(liabilityTypeList, jenis).nominal,
+                  amount: getItemById(liabilityTypeList, jenis).amount,
                 });
               })
             }

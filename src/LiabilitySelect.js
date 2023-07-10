@@ -1,15 +1,15 @@
 import { Select } from "@chakra-ui/react";
 
-export function LialibilitySelect({ value, onValueChange, jenisList }) {
+export function LialibilitySelect({ value, onValueChange, typeList }) {
   return (
     <Select
       value={value}
       onChange={onValueChange}
       placeholder="Pilih Jenis Tanggungan"
     >
-      {jenisList.map((item) => (
+      {typeList.map((item) => (
         <option key={item.id} value={item.id}>
-          {item.nama}
+          {item.name}
         </option>
       ))}
     </Select>
