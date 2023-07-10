@@ -1,3 +1,5 @@
+import { nanoid } from "nanoid";
+
 export function removeItemById(array, id) {
   array.splice(
     array.findIndex((item) => item.id === id),
@@ -10,5 +12,5 @@ export function getItemById(array, id) {
 }
 
 export function generateId() {
-  return window.crypto.randomUUID();
+  return nanoid();
 }
