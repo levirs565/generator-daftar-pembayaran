@@ -3,54 +3,73 @@ import {
   VStack,
   Input,
   IconButton,
-  Card,
-  CardBody,
   Heading,
-  CardHeader,
   FormControl,
   FormLabel,
+  Accordion,
+  AccordionButton,
+  AccordionIcon,
+  Box,
+  AccordionItem,
+  AccordionPanel,
+  Text,
 } from "@chakra-ui/react";
 import { RecipientLiabilityList } from "./RecipientLiabilityList";
 import { generateId, getItemById } from "./util";
 
 function RecipientItem({ recipient, index, onUpdate }) {
   return (
-    <Card key={recipient.id}>
-      <CardHeader>
-        <Heading size={"sm"}>Penerima ke {index + 1}</Heading>
-      </CardHeader>
-      <CardBody>
-        <VStack alignItems={"stretch"}>
-          <FormControl>
-            <FormLabel>Nama</FormLabel>
-            <Input
-              value={recipient.name}
-              placeholder="Nama Penerima"
-              onChange={(e) =>
-                onUpdate((draft) => {
-                  draft.name = e.target.value;
-                })
-              }
-            />
-          </FormControl>
-          <Heading size={"sm"}>Tanggungan</Heading>
-          <RecipientLiabilityList
-            list={recipient.lialibilityList}
-            onUpdateList={(fn) => {
-              onUpdate((draft) => {
-                fn(draft.lialibilityList);
-              });
-            }}
-          />
-        </VStack>
-      </CardBody>
-    </Card>
+    <AccordionItem>
+      {({ isExpanded }) => (
+        <>
+          <h2>
+            <AccordionButton>
+              <Box as="span" flex="1" textAlign="left">
+                Penerima ke {index + 1}
+              </Box>
+              <AccordionIcon />
+            </AccordionButton>
+            <Heading size={"sm"}></Heading>
+          </h2>
+          {!isExpanded && (
+            <Text px={4} py={2}>
+              {recipient.name}
+            </Text>
+          )}
+          <AccordionPanel>
+            <VStack alignItems={"stretch"}>
+              <FormControl>
+                <FormLabel>Nama</FormLabel>
+                <Input
+                  value={recipient.name}
+                  placeholder="Nama Penerima"
+                  onChange={(e) =>
+                    onUpdate((draft) => {
+                      draft.name = e.target.value;
+                    })
+                  }
+                />
+              </FormControl>
+              <Heading size={"sm"}>Tanggungan</Heading>
+              <RecipientLiabilityList
+                list={recipient.lialibilityList}
+                onUpdateList={(fn) => {
+                  onUpdate((draft) => {
+                    fn(draft.lialibilityList);
+                  });
+                }}
+              />
+            </VStack>
+          </AccordionPanel>
+        </>
+      )}
+    </AccordionItem>
   );
 }
 
 function RecipientList({ list, onUpdateList }) {
   return (
-    <VStack alignItems="stretch" gap={4}>
+    <Accordion allowToggle>
       {list.map((item, index) => (
         <RecipientItem
           key={item.id}
@@ -63,7 +82,7 @@ function RecipientList({ list, onUpdateList }) {
           }
         />
       ))}
-    </VStack>
+    </Accordion>
   );
 }
 
