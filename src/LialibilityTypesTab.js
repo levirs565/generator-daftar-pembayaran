@@ -7,37 +7,27 @@ import {
   Flex,
   Textarea,
   Accordion,
-  AccordionItem,
-  AccordionButton,
-  Box,
-  AccordionIcon,
-  AccordionPanel,
-  Text,
 } from "@chakra-ui/react";
 import CurrencyInput from "react-currency-input-field";
+import { motion } from "framer-motion";
 import { generateId, getItemById, removeItemById } from "./util";
+import {
+  AccordionItemAnimatable,
+  AccordionBodyMotionProps,
+  AccordionAnimatable,
+} from "./AccordionAnimatable";
 
 function LialibilityTypeItem({ liability, onUpdate, onRemove, index }) {
   return (
-    <AccordionItem>
-      {({ isExpanded }) => (
+    <AccordionItemAnimatable
+      id={liability.id}
+      title={`Tanggungan ke ${index + 1}`}
+      collapsedBodyTitle={liability.name}
+      expandedBody={
         <>
-          <h2>
-            <AccordionButton>
-              <Box as="span" flex="1" textAlign="left">
-                Tanggungan ke {index + 1}
-              </Box>
-              <AccordionIcon />
-            </AccordionButton>
-          </h2>
-          {!isExpanded && (
-            <Text px={4} py={2}>
-              {liability.name}
-            </Text>
-          )}
-          <AccordionPanel>
-            <FormControl>
-              <FormLabel>Nama</FormLabel>
+          <FormControl>
+            <FormLabel>Nama</FormLabel>
+            <motion.div {...AccordionBodyMotionProps}>
               <Textarea
                 value={liability.name}
                 placeholder="Nama"
@@ -51,35 +41,35 @@ function LialibilityTypeItem({ liability, onUpdate, onRemove, index }) {
                 }}
                 rows={2}
               />
-            </FormControl>
-            <FormControl>
-              <FormLabel>Nominal</FormLabel>
-              <Input
-                as={CurrencyInput}
-                intlConfig={{ locale: "id-ID", currency: "IDR" }}
-                value={liability.amount}
-                onValueChange={(e) =>
-                  onUpdate((draft) => {
-                    draft.amount = parseInt(e);
-                  })
-                }
-              />
-            </FormControl>
-            <Flex mt={4} justifyContent="end">
-              <Button colorScheme="red" onClick={onRemove}>
-                Hapus
-              </Button>
-            </Flex>
-          </AccordionPanel>
+            </motion.div>
+          </FormControl>
+          <FormControl>
+            <FormLabel>Nominal</FormLabel>
+            <Input
+              as={CurrencyInput}
+              intlConfig={{ locale: "id-ID", currency: "IDR" }}
+              value={liability.amount}
+              onValueChange={(e) =>
+                onUpdate((draft) => {
+                  draft.amount = parseInt(e);
+                })
+              }
+            />
+          </FormControl>
+          <Flex mt={4} justifyContent="end">
+            <Button colorScheme="red" onClick={onRemove}>
+              Hapus
+            </Button>
+          </Flex>
         </>
-      )}
-    </AccordionItem>
+      }
+    />
   );
 }
 
 function LialibilityTypeList({ list, onUpdateList }) {
   return (
-    <Accordion allowToggle>
+    <AccordionAnimatable allowToggle>
       {list.map((item, index) => (
         <LialibilityTypeItem
           key={item.id}
@@ -97,7 +87,7 @@ function LialibilityTypeList({ list, onUpdateList }) {
           }
         />
       ))}
-    </Accordion>
+    </AccordionAnimatable>
   );
 }
 

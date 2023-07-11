@@ -7,39 +7,28 @@ import {
   FormControl,
   FormLabel,
   Accordion,
-  AccordionButton,
-  AccordionIcon,
-  Box,
-  AccordionItem,
-  AccordionPanel,
-  Text,
 } from "@chakra-ui/react";
 import { RecipientLiabilityList } from "./RecipientLiabilityList";
 import { generateId, getItemById } from "./util";
+import {
+  AccordionAnimatable,
+  AccordionBodyMotionProps,
+  AccordionItemAnimatable,
+} from "./AccordionAnimatable";
+import { motion } from "framer-motion";
 
 function RecipientItem({ recipient, index, onUpdate }) {
   return (
-    <AccordionItem>
-      {({ isExpanded }) => (
+    <AccordionItemAnimatable
+      id={recipient.id}
+      title={`Penerima ke ${index + 1}`}
+      collapsedBodyTitle={recipient.name}
+      expandedBody={
         <>
-          <h2>
-            <AccordionButton>
-              <Box as="span" flex="1" textAlign="left">
-                Penerima ke {index + 1}
-              </Box>
-              <AccordionIcon />
-            </AccordionButton>
-            <Heading size={"sm"}></Heading>
-          </h2>
-          {!isExpanded && (
-            <Text px={4} py={2}>
-              {recipient.name}
-            </Text>
-          )}
-          <AccordionPanel>
-            <VStack alignItems={"stretch"}>
-              <FormControl>
-                <FormLabel>Nama</FormLabel>
+          <VStack alignItems={"stretch"}>
+            <FormControl>
+              <FormLabel>Nama</FormLabel>
+              <motion.div {...AccordionBodyMotionProps}>
                 <Input
                   value={recipient.name}
                   placeholder="Nama Penerima"
@@ -49,27 +38,27 @@ function RecipientItem({ recipient, index, onUpdate }) {
                     })
                   }
                 />
-              </FormControl>
-              <Heading size={"sm"}>Tanggungan</Heading>
-              <RecipientLiabilityList
-                list={recipient.lialibilityList}
-                onUpdateList={(fn) => {
-                  onUpdate((draft) => {
-                    fn(draft.lialibilityList);
-                  });
-                }}
-              />
-            </VStack>
-          </AccordionPanel>
+              </motion.div>
+            </FormControl>
+            <Heading size={"sm"}>Tanggungan</Heading>
+            <RecipientLiabilityList
+              list={recipient.lialibilityList}
+              onUpdateList={(fn) => {
+                onUpdate((draft) => {
+                  fn(draft.lialibilityList);
+                });
+              }}
+            />
+          </VStack>
         </>
-      )}
-    </AccordionItem>
+      }
+    />
   );
 }
 
 function RecipientList({ list, onUpdateList }) {
   return (
-    <Accordion allowToggle>
+    <AccordionAnimatable allowToggle>
       {list.map((item, index) => (
         <RecipientItem
           key={item.id}
@@ -82,7 +71,7 @@ function RecipientList({ list, onUpdateList }) {
           }
         />
       ))}
-    </Accordion>
+    </AccordionAnimatable>
   );
 }
 
