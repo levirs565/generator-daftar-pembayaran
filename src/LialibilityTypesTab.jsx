@@ -6,7 +6,6 @@ import {
   VStack,
   Flex,
   Textarea,
-  Accordion,
 } from "@chakra-ui/react";
 import CurrencyInput from "react-currency-input-field";
 import { motion } from "framer-motion";

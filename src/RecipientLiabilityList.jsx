@@ -5,7 +5,6 @@ import {
   Text,
   FormControl,
   FormLabel,
-  Divider,
   Box,
 } from "@chakra-ui/react";
 import { useContext, useMemo, useState } from "react";
@@ -73,7 +72,7 @@ function RecipientLiabilityAdder({ typeList, onAdd }) {
         <Button
           colorScheme="pink"
           isDisabled={selectedJenis === ""}
-          onClick={(e) => {
+          onClick={() => {
             onAdd(selectedJenis);
             setSelectedJenis("");
           }}

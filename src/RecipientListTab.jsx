@@ -6,7 +6,6 @@ import {
   Heading,
   FormControl,
   FormLabel,
-  Accordion,
 } from "@chakra-ui/react";
 import { RecipientLiabilityList } from "./RecipientLiabilityList";
 import { generateId, getItemById } from "./util";

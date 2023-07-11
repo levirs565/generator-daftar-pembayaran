@@ -13,6 +13,7 @@ import { generateId } from "./util";
 import { RecipientListTab } from "./RecipientListTab";
 import { LialibilityTypesTab } from "./LialibilityTypesTab";
 import { LialibilityTypeListContext } from "./LialibilityTypeListContext";
+import { GenerateTab } from "./GenerateTab";
 
 function App() {
   const [recipientList, updateRecipientList] = useImmer([]);
@@ -47,6 +48,7 @@ function App() {
         >
           <Tab textColor="white">Jenis Tanggungan</Tab>
           <Tab textColor="white">Daftar Penerima</Tab>
+          <Tab textColor="white">Hasilkan</Tab>
         </TabList>
         <TabPanels>
           <TabPanel>
@@ -62,6 +64,9 @@ function App() {
                 onUpdateList={updateRecipientList}
               />
             </LialibilityTypeListContext.Provider>
+          </TabPanel>
+          <TabPanel>
+            <GenerateTab />
           </TabPanel>
         </TabPanels>
       </Tabs>
