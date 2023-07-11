@@ -6,6 +6,9 @@ import {
   Card,
   CardBody,
   Heading,
+  CardHeader,
+  FormControl,
+  FormLabel,
 } from "@chakra-ui/react";
 import { RecipientLiabilityList } from "./RecipientLiabilityList";
 import { generateId, getItemById } from "./util";
@@ -13,18 +16,23 @@ import { generateId, getItemById } from "./util";
 function RecipientItem({ recipient, index, onUpdate }) {
   return (
     <Card key={recipient.id}>
+      <CardHeader>
+        <Heading size={"sm"}>Penerima ke {index + 1}</Heading>
+      </CardHeader>
       <CardBody>
         <VStack alignItems={"stretch"}>
-          <Heading size={"sm"}>Penerima ke {index + 1}</Heading>
-          <Input
-            value={recipient.name}
-            placeholder="Nama Penerima"
-            onChange={(e) =>
-              onUpdate((draft) => {
-                draft.name = e.target.value;
-              })
-            }
-          />
+          <FormControl>
+            <FormLabel>Nama</FormLabel>
+            <Input
+              value={recipient.name}
+              placeholder="Nama Penerima"
+              onChange={(e) =>
+                onUpdate((draft) => {
+                  draft.name = e.target.value;
+                })
+              }
+            />
+          </FormControl>
           <Heading size={"sm"}>Tanggungan</Heading>
           <RecipientLiabilityList
             list={recipient.lialibilityList}

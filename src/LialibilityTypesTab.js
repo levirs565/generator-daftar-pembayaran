@@ -1,57 +1,97 @@
-import { DeleteIcon } from "@chakra-ui/icons";
-import { Input, Button, IconButton, Th, Tr, Td } from "@chakra-ui/react";
+import {
+  Input,
+  Button,
+  FormControl,
+  FormLabel,
+  Card,
+  CardBody,
+  CardHeader,
+  Heading,
+  VStack,
+  Flex,
+  CardFooter,
+  Textarea,
+} from "@chakra-ui/react";
 import CurrencyInput from "react-currency-input-field";
 import { generateId, getItemById, removeItemById } from "./util";
-import { LialibilityTable } from "./LialibilityTable";
 
-function LialibilityTypeItem({ liability, onUpdate, onRemove }) {
+function LialibilityTypeItem({ liability, onUpdate, onRemove, index }) {
   return (
-    <Tr>
-      <Td>
-        <Input
-          value={liability.name}
-          placeholder="Nama"
-          onChange={(e) =>
-            onUpdate((draft) => {
-              draft.name = e.target.value;
+    <Card>
+      <CardHeader>
+        <Heading size="sm">Tanggungan ke {index + 1}</Heading>
+      </CardHeader>
+      <CardBody>
+        <FormControl>
+          <FormLabel>Nama</FormLabel>
+          <Textarea
+            value={liability.name}
+            placeholder="Nama"
+            onChange={(e) =>
+              onUpdate((draft) => {
+                draft.name = e.target.value;
+              })
+            }
+            onInput={(e) => {
+              e.target.value = e.target.value.split("\n").join(" ");
+            }}
+            rows={2}
+          />
+        </FormControl>
+        <FormControl>
+          <FormLabel>Nominal</FormLabel>
+          <Input
+            as={CurrencyInput}
+            intlConfig={{ locale: "id-ID", currency: "IDR" }}
+            value={liability.amount}
+            onValueChange={(e) =>
+              onUpdate((draft) => {
+                draft.amount = parseInt(e);
+              })
+            }
+          />
+        </FormControl>
+      </CardBody>
+      <CardFooter justifyContent={"end"}>
+        <Button colorScheme="red" onClick={onRemove}>
+          Hapus
+        </Button>
+      </CardFooter>
+    </Card>
+  );
+}
+
+function LialibilityTypeList({ list, onUpdateList }) {
+  return (
+    <VStack alignItems="stretch" gap={2}>
+      {list.map((item, index) => (
+        <LialibilityTypeItem
+          key={item.id}
+          index={index}
+          liability={item}
+          onUpdate={(fn) =>
+            onUpdateList((draft) => {
+              fn(getItemById(draft, item.id));
+            })
+          }
+          onRemove={() =>
+            onUpdateList((draft) => {
+              removeItemById(draft, item.id);
             })
           }
         />
-      </Td>
-      <Td>
-        <Input
-          as={CurrencyInput}
-          intlConfig={{ locale: "id-ID", currency: "IDR" }}
-          value={liability.amount}
-          onValueChange={(e) =>
-            onUpdate((draft) => {
-              draft.amount = parseInt(e);
-            })
-          }
-        />
-      </Td>
-      <Td>
-        <IconButton
-          aria-label="Remove Current Item"
-          colorScheme="red"
-          icon={<DeleteIcon />}
-          onClick={onRemove}
-        />
-      </Td>
-    </Tr>
+      ))}
+    </VStack>
   );
 }
 
 function LialibilityTypeAdder({ onAdd }) {
   return (
-    <Tr>
-      <Th></Th>
-      <Th colSpan={2}>
-        <Button colorScheme="orange" onClick={onAdd} width={"100%"}>
-          Tambah Jenis
-        </Button>
-      </Th>
-    </Tr>
+    <Flex alignSelf="end">
+      <Button colorScheme="pink" onClick={onAdd} width={"100%"}>
+        Tambah Jenis
+      </Button>
+    </Flex>
   );
 }
 
@@ -67,24 +107,9 @@ export function LialibilityTypesTab({ list, onUpdateList }) {
   }
 
   return (
-    <LialibilityTable
-      body={list.map((item) => (
-        <LialibilityTypeItem
-          key={item.id}
-          liability={item}
-          onUpdate={(fn) =>
-            onUpdateList((draft) => {
-              fn(getItemById(draft, item.id));
-            })
-          }
-          onRemove={() =>
-            onUpdateList((draft) => {
-              removeItemById(draft, item.id);
-            })
-          }
-        />
-      ))}
-      footer={<LialibilityTypeAdder onAdd={addItem} />}
-    />
+    <VStack alignItems="stretch" gap={4}>
+      <LialibilityTypeList list={list} onUpdateList={onUpdateList} />
+      <LialibilityTypeAdder onAdd={addItem} />
+    </VStack>
   );
 }
