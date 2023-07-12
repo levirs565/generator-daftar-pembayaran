@@ -15,6 +15,7 @@ import {
   AccordionBodyMotionProps,
   AccordionAnimatable,
 } from "./AccordionAnimatable";
+import { useEffect, useRef, useState } from "react";
 
 function LialibilityTypeItem({ liability, onUpdate, onRemove, index }) {
   return (
@@ -66,9 +67,9 @@ function LialibilityTypeItem({ liability, onUpdate, onRemove, index }) {
   );
 }
 
-function LialibilityTypeList({ list, onUpdateList }) {
+function LialibilityTypeList({ list, onUpdateList, index, onChange }) {
   return (
-    <AccordionAnimatable allowToggle>
+    <AccordionAnimatable allowToggle index={index} onChange={onChange}>
       {list.map((item, index) => (
         <LialibilityTypeItem
           key={item.id}
@@ -101,7 +102,12 @@ function LialibilityTypeAdder({ onAdd }) {
 }
 
 export function LialibilityTypesTab({ list, onUpdateList }) {
+  const [openIndex, setOpenIndex] = useState(-1);
+  const pendingScroll = useRef(false);
+
   function addItem() {
+    setOpenIndex(list.length);
+    pendingScroll.current = true;
     onUpdateList((draft) => {
       draft.push({
         id: generateId(),
@@ -111,9 +117,21 @@ export function LialibilityTypesTab({ list, onUpdateList }) {
     });
   }
 
+  useEffect(() => {
+    if (pendingScroll.current) {
+      window.scrollTo(0, document.body.scrollHeight);
+      pendingScroll.current = false;
+    }
+  });
+
   return (
     <VStack alignItems="stretch" gap={4}>
-      <LialibilityTypeList list={list} onUpdateList={onUpdateList} />
+      <LialibilityTypeList
+        list={list}
+        onUpdateList={onUpdateList}
+        index={openIndex}
+        onChange={(index) => setOpenIndex(index)}
+      />
       <LialibilityTypeAdder onAdd={addItem} />
     </VStack>
   );
