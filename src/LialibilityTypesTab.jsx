@@ -106,7 +106,7 @@ export function LialibilityTypesTab({ list, onUpdateList }) {
   const [modalItem, setModalItem] = useState(null);
 
   return (
-    <VStack alignItems="stretch" gap={4}>
+    <VStack alignItems="stretch" gap={2}>
       <LialibilityTypeList
         list={list}
         onEdit={(item) => {
