@@ -6,9 +6,10 @@ import {
   Heading,
   FormControl,
   FormLabel,
+  Button,
 } from "@chakra-ui/react";
 import { RecipientLiabilityList } from "./RecipientLiabilityList";
-import { generateId, getItemById } from "./util";
+import { generateId, getItemById, removeItemById } from "./util";
 import {
   AccordionAnimatable,
   AccordionBodyMotionProps,
@@ -16,7 +17,7 @@ import {
 } from "./AccordionAnimatable";
 import { motion } from "framer-motion";
 
-function RecipientItem({ recipient, index, onUpdate }) {
+function RecipientItem({ recipient, index, onUpdate, onRemove }) {
   return (
     <AccordionItemAnimatable
       id={recipient.id}
@@ -48,6 +49,9 @@ function RecipientItem({ recipient, index, onUpdate }) {
                 });
               }}
             />
+            <Button colorScheme="red" onClick={onRemove} alignSelf="end">
+              Hapus Penerima
+            </Button>
           </VStack>
         </>
       }
@@ -68,6 +72,11 @@ function RecipientList({ list, onUpdateList }) {
               fn(getItemById(draft, item.id));
             })
           }
+          onRemove={() => {
+            onUpdateList((draft) => {
+              removeItemById(draft, item.id);
+            });
+          }}
         />
       ))}
     </AccordionAnimatable>
