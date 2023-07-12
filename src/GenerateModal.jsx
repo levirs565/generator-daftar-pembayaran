@@ -69,28 +69,28 @@ export function GenerateModal({
   const fileInput = useRef();
   const toast = useToast();
 
-  const handleWorkerResult = (e) => {
-    setIsProcessing(false);
-    const detail = e.detail;
-    if (detail.success) {
-      const name = `Daftar Pembayaran ${Date.now()}.docx`;
-      const href = URL.createObjectURL(detail.blob);
-      setResultLink({
-        name,
-        href,
-      });
-      onFileShow();
-    } else {
-      toast({
-        title: "Error Saat Menghasilkan Dokumen",
-        description: detail.error.message,
-        status: "error",
-        duration: 2000,
-        isClosable: true,
-      });
-    }
-  };
   useEffect(() => {
+    const handleWorkerResult = (e) => {
+      setIsProcessing(false);
+      const detail = e.detail;
+      if (detail.success) {
+        const name = `Daftar Pembayaran ${Date.now()}.docx`;
+        const href = URL.createObjectURL(detail.blob);
+        setResultLink({
+          name,
+          href,
+        });
+        onFileShow();
+      } else {
+        toast({
+          title: "Error Saat Menghasilkan Dokumen",
+          description: detail.error.message,
+          status: "error",
+          duration: 2000,
+          isClosable: true,
+        });
+      }
+    };
     window.addEventListener(workerResultEvent, handleWorkerResult);
     return () =>
       window.removeEventListener(workerResultEvent, handleWorkerResult);
