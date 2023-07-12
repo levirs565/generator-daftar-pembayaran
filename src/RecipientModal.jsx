@@ -4,6 +4,7 @@ import {
   FormErrorMessage,
   FormLabel,
   Heading,
+  Input,
   Modal,
   ModalBody,
   ModalContent,
@@ -11,7 +12,6 @@ import {
   ModalHeader,
   ModalOverlay,
 } from "@chakra-ui/react";
-import { FastInput } from "./FastInput";
 import { RecipientLiabilityList } from "./RecipientLiabilityList";
 import { useState } from "react";
 import { useImmer } from "use-immer";
@@ -29,10 +29,10 @@ function RecipientModalContent({ initialItem, onClose, onSubmit }) {
       <ModalBody>
         <FormControl isInvalid={isNameInvalid} isRequired>
           <FormLabel>Nama</FormLabel>
-          <FastInput
+          <Input
             value={name}
             placeholder="Nama Penerima"
-            onUpdate={(e) => setName(e)}
+            onChange={(e) => setName(e.target.value)}
           />
           <FormErrorMessage>Nama tidak boleh kosong.</FormErrorMessage>
         </FormControl>

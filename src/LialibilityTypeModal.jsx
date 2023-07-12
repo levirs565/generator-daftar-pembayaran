@@ -10,8 +10,9 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  Textarea,
 } from "@chakra-ui/react";
-import { FastCurrencyInput, FastTextArea } from "./FastInput";
+import { FastCurrencyInput } from "./FastInput";
 import { useEffect, useState } from "react";
 
 function LialibilityTypeModalContent({ item, isNew, onSubmit, onClose }) {
@@ -37,13 +38,13 @@ function LialibilityTypeModalContent({ item, isNew, onSubmit, onClose }) {
       <ModalBody>
         <FormControl isInvalid={isNameInvalid} isRequired>
           <FormLabel>Nama</FormLabel>
-          <FastTextArea
+          <Textarea
             value={name}
             placeholder="Nama"
-            onUpdate={(e) => setName(e)}
             onInput={(e) => {
               e.target.value = e.target.value.split("\n").join(" ");
             }}
+            onChange={(e) => setName(e.target.value)}
             rows={2}
             data-autofocus
           />
