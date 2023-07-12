@@ -20,7 +20,7 @@ function NestedCard({ children }) {
   );
 }
 
-function RecipientLiabilityItem({ liability, onUpdate, onRemove }) {
+function RecipientLiabilityItemEditor({ liability, onUpdate, onRemove }) {
   const liabilityTypeList = useContext(LialibilityTypeListContext);
   return (
     <NestedCard>
@@ -82,7 +82,7 @@ function RecipientLiabilityAdder({ typeList, onAdd }) {
   );
 }
 
-export function RecipientLiabilityList({ list, onUpdateList }) {
+export function RecipientLiabilityListEditor({ list, onUpdateList }) {
   const liabilityTypeList = useContext(LialibilityTypeListContext);
   const unusedLialibilityTypeList = useMemo(
     () =>
@@ -97,7 +97,7 @@ export function RecipientLiabilityList({ list, onUpdateList }) {
   return (
     <VStack alignItems="stretch" gap={2}>
       {list.map((item) => (
-        <RecipientLiabilityItem
+        <RecipientLiabilityItemEditor
           key={item.id}
           liability={item}
           onUpdate={(fn) =>

@@ -23,7 +23,7 @@ import {
 } from "./util";
 import { Icon } from "@chakra-ui/icons";
 import { RiMore2Fill } from "react-icons/ri";
-import { LialibilityTypeModal } from "./LialibilityTypeModal";
+import { LialibilityTypeModal } from "./LialibilityTypeEditModal";
 import { RiPencilFill } from "react-icons/ri";
 import { RiDeleteBinFill } from "react-icons/ri";
 import { useState } from "react";

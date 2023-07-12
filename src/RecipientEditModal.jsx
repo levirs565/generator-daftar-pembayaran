@@ -11,11 +11,11 @@ import {
   ModalHeader,
   ModalOverlay,
 } from "@chakra-ui/react";
-import { RecipientLiabilityList } from "./RecipientLiabilityList";
+import { RecipientLiabilityListEditor } from "./RecipientLiabilityListEditor";
 import { useState } from "react";
 import { useImmer } from "use-immer";
 
-function RecipientModalContent({ initialItem, onClose, onSubmit }) {
+function RecipientEditModalContent({ initialItem, onClose, onSubmit }) {
   const [name, setName] = useState(initialItem ? initialItem.name : "");
   const [lialibilityList, updateLialibilityList] = useImmer(
     initialItem ? initialItem.lialibilityList : []
@@ -37,7 +37,7 @@ function RecipientModalContent({ initialItem, onClose, onSubmit }) {
         </FormControl>
         <FormControl>
           <FormLabel>Tanggungan</FormLabel>
-          <RecipientLiabilityList
+          <RecipientLiabilityListEditor
             list={lialibilityList}
             onUpdateList={updateLialibilityList}
           />
@@ -66,7 +66,7 @@ function RecipientModalContent({ initialItem, onClose, onSubmit }) {
   );
 }
 
-export function RecipientModal({ item, isOpen, onClose, onSubmit }) {
+export function RecipientEditModal({ item, isOpen, onClose, onSubmit }) {
   return (
     <Modal
       isOpen={isOpen}
@@ -75,7 +75,7 @@ export function RecipientModal({ item, isOpen, onClose, onSubmit }) {
       blockScrollOnMount={false}
     >
       <ModalOverlay />
-      <RecipientModalContent
+      <RecipientEditModalContent
         initialItem={item}
         onSubmit={onSubmit}
         onClose={onClose}

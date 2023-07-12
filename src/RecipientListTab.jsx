@@ -26,7 +26,7 @@ import {
 import { RiPencilFill } from "react-icons/ri";
 import { RiDeleteBinFill } from "react-icons/ri";
 import { RiMore2Fill } from "react-icons/ri";
-import { RecipientModal } from "./RecipientModal";
+import { RecipientEditModal } from "./RecipientEditModal";
 import { useContext, useState } from "react";
 import { LialibilityTypeListContext } from "./LialibilityTypeListContext";
 
@@ -152,7 +152,7 @@ export function RecipientListTab({ list, onUpdateList }) {
           onModalOpen();
         }}
       />
-      <RecipientModal
+      <RecipientEditModal
         item={modalItem}
         onSubmit={(item) => {
           if (item.id) {
