@@ -114,7 +114,6 @@ export function LialibilityTypesTab({ list, onUpdateList }) {
           onModalOpen();
         }}
         onDelete={(item) => {
-          console.log(item);
           const index = getItemIndexById(list, item.id);
           onUpdateList((draft) => {
             removeItemByIndex(draft, index);

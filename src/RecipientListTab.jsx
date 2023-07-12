@@ -1,86 +1,109 @@
-import { AddIcon } from "@chakra-ui/icons";
+import { AddIcon, Icon } from "@chakra-ui/icons";
 import {
   VStack,
   IconButton,
   Heading,
-  FormControl,
-  FormLabel,
-  Button,
+  Card,
+  CardHeader,
+  Flex,
+  Circle,
+  Box,
+  Text,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  CardBody,
+  useDisclosure,
 } from "@chakra-ui/react";
-import { RecipientLiabilityList } from "./RecipientLiabilityList";
-import { generateId, getItemById, removeItemById } from "./util";
 import {
-  AccordionAnimatable,
-  AccordionBodyMotionProps,
-  AccordionItemAnimatable,
-  useAccordionAutoScroller,
-} from "./AccordionAnimatable";
-import { motion } from "framer-motion";
-import { FastInput } from "./FastInput";
+  formatCurrency,
+  generateId,
+  getItemById,
+  getItemIndexById,
+  removeItemByIndex,
+} from "./util";
+import { RiPencilFill } from "react-icons/ri";
+import { RiDeleteBinFill } from "react-icons/ri";
+import { RiMore2Fill } from "react-icons/ri";
+import { RecipientModal } from "./RecipientModal";
+import { useContext, useState } from "react";
+import { LialibilityTypeListContext } from "./LialibilityTypeListContext";
 
-function RecipientItem({ recipient, index, onUpdate, onRemove }) {
+function RecipientItem({ item, index, onEdit, onDelete }) {
+  const liabilityTypeList = useContext(LialibilityTypeListContext);
   return (
-    <AccordionItemAnimatable
-      id={recipient.id}
-      title={`Penerima ke ${index + 1}`}
-      collapsedBodyTitle={recipient.name}
-      expandedBody={
-        <>
-          <VStack alignItems={"stretch"}>
-            <FormControl>
-              <FormLabel>Nama</FormLabel>
-              <motion.div {...AccordionBodyMotionProps}>
-                <FastInput
-                  value={recipient.name}
-                  placeholder="Nama Penerima"
-                  onUpdate={(e) =>
-                    onUpdate((draft) => {
-                      draft.name = e;
-                    })
-                  }
-                />
-              </motion.div>
-            </FormControl>
-            <Heading size={"sm"}>Tanggungan</Heading>
-            <RecipientLiabilityList
-              list={recipient.lialibilityList}
-              onUpdateList={(fn) => {
-                onUpdate((draft) => {
-                  fn(draft.lialibilityList);
-                });
-              }}
+    <Card size="sm">
+      <CardHeader>
+        <Flex gap={3} alignItems="center">
+          <Circle size={12} bg="gray.100">
+            <Text fontSize="xl">{index + 1}</Text>
+          </Circle>
+          <Box flexGrow={1}>
+            <Heading as="h2" size="sm">
+              {item.name}
+            </Heading>
+            <Text fontSize="md">
+              {formatCurrency(
+                item.lialibilityList.reduce(
+                  (result, current) => result + current.amount,
+                  0
+                )
+              )}
+            </Text>
+          </Box>
+          <Menu isLazy autoSelect={false}>
+            <MenuButton
+              as={IconButton}
+              size="lg"
+              aria-label="Edit"
+              variant="ghost"
+              icon={<Icon as={RiMore2Fill} />}
             />
-            <Button colorScheme="red" onClick={onRemove} alignSelf="end">
-              Hapus Penerima
-            </Button>
-          </VStack>
-        </>
-      }
-    />
+            <MenuList>
+              <MenuItem
+                icon={<Icon as={RiPencilFill} />}
+                onClick={() => onEdit(item)}
+              >
+                Ubah
+              </MenuItem>
+              <MenuItem
+                icon={<Icon as={RiDeleteBinFill} />}
+                onClick={() => onDelete(item)}
+              >
+                Hapus
+              </MenuItem>
+            </MenuList>
+          </Menu>
+        </Flex>
+      </CardHeader>
+      <CardBody>
+        {item.lialibilityList.map((item) => (
+          <Box key={item.id}>
+            <Text fontWeight="bold">
+              {getItemById(liabilityTypeList, item.id).name}
+            </Text>
+            <Text>{formatCurrency(item.amount)}</Text>
+          </Box>
+        ))}
+      </CardBody>
+    </Card>
   );
 }
 
-function RecipientList({ list, onUpdateList, ...rest }) {
+function RecipientList({ list, onEdit, onDelete }) {
   return (
-    <AccordionAnimatable allowToggle {...rest}>
+    <VStack alignItems="stretch">
       {list.map((item, index) => (
         <RecipientItem
           key={item.id}
-          recipient={item}
+          item={item}
           index={index}
-          onUpdate={(fn) =>
-            onUpdateList((draft) => {
-              fn(getItemById(draft, item.id));
-            })
-          }
-          onRemove={() => {
-            onUpdateList((draft) => {
-              removeItemById(draft, item.id);
-            });
-          }}
+          onEdit={onEdit}
+          onDelete={onDelete}
         />
       ))}
-    </AccordionAnimatable>
+    </VStack>
   );
 }
 
@@ -101,26 +124,57 @@ function RecipientAdder({ onAdd }) {
 }
 
 export function RecipientListTab({ list, onUpdateList }) {
-  const { accordionProps, onBeforeAddItem } = useAccordionAutoScroller();
+  const {
+    isOpen: isModalOpen,
+    onClose: onModalClose,
+    onOpen: onModalOpen,
+  } = useDisclosure();
+  const [modalItem, setModalItem] = useState(null);
 
   return (
     <>
       <RecipientList
         list={list}
-        onUpdateList={onUpdateList}
-        {...accordionProps}
+        onEdit={(item) => {
+          setModalItem(item);
+          onModalOpen();
+        }}
+        onDelete={(item) => {
+          const index = getItemById(list, item.id);
+          onUpdateList((draft) => {
+            removeItemByIndex(draft, index);
+          });
+        }}
       />
       <RecipientAdder
         onAdd={() => {
-          onBeforeAddItem(list);
-          onUpdateList((draft) => {
-            draft.push({
-              id: generateId(),
-              name: "",
-              lialibilityList: [],
-            });
-          });
+          setModalItem(null);
+          onModalOpen();
         }}
+      />
+      <RecipientModal
+        item={modalItem}
+        onSubmit={(item) => {
+          if (item.id) {
+            const index = getItemIndexById(list, item.id);
+            onUpdateList((draft) => {
+              draft[index] = {
+                ...draft[index],
+                ...item,
+              };
+            });
+          } else {
+            onUpdateList((draft) => {
+              draft.push({
+                id: generateId(),
+                ...item,
+              });
+            });
+          }
+          setModalItem(null);
+        }}
+        isOpen={isModalOpen}
+        onClose={onModalClose}
       />
     </>
   );

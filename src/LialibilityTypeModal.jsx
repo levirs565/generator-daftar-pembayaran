@@ -14,15 +14,13 @@ import { FastCurrencyInput, FastTextArea } from "./FastInput";
 import { useEffect, useState } from "react";
 
 function LialibilityTypeModalContent({ item, isNew, onSubmit, onClose }) {
-  const [name, setName] = useState("");
+  const [name, setName] = useState(item ? item.name : "");
   const [amount, setAmount] = useState(0);
 
   useEffect(() => {
     if (item) {
-      setName(item.name);
       setAmount(item.amount);
     } else {
-      setName("");
       setAmount(0);
     }
   }, [item]);
