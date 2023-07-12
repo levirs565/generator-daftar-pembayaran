@@ -1,7 +1,6 @@
 import { AddIcon } from "@chakra-ui/icons";
 import {
   VStack,
-  Input,
   IconButton,
   Heading,
   FormControl,
@@ -16,6 +15,7 @@ import {
   AccordionItemAnimatable,
 } from "./AccordionAnimatable";
 import { motion } from "framer-motion";
+import { FastInput } from "./FastInput";
 
 function RecipientItem({ recipient, index, onUpdate, onRemove }) {
   return (
@@ -29,12 +29,12 @@ function RecipientItem({ recipient, index, onUpdate, onRemove }) {
             <FormControl>
               <FormLabel>Nama</FormLabel>
               <motion.div {...AccordionBodyMotionProps}>
-                <Input
+                <FastInput
                   value={recipient.name}
                   placeholder="Nama Penerima"
-                  onChange={(e) =>
+                  onUpdate={(e) =>
                     onUpdate((draft) => {
-                      draft.name = e.target.value;
+                      draft.name = e;
                     })
                   }
                 />

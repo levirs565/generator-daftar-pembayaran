@@ -28,3 +28,15 @@ export function FastCurrencyInput({ value, onUpdate, ...rest }) {
     />
   );
 }
+
+export function FastInput({ value, onUpdate, ...rest }) {
+  const [currentValue, setCurrentValue] = useState(value);
+  return (
+    <Input
+      value={currentValue}
+      onChange={(e) => setCurrentValue(e.target.value)}
+      onBlur={() => onUpdate(currentValue)}
+      {...rest}
+    />
+  );
+}

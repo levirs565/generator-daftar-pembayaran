@@ -1,5 +1,4 @@
 import {
-  Input,
   Button,
   VStack,
   Text,
@@ -8,10 +7,10 @@ import {
   Box,
 } from "@chakra-ui/react";
 import { useContext, useMemo, useState } from "react";
-import CurrencyInput from "react-currency-input-field";
 import { getItemById, removeItemById } from "./util";
 import { LialibilitySelect } from "./LiabilitySelect";
 import { LialibilityTypeListContext } from "./LialibilityTypeListContext";
+import { FastCurrencyInput } from "./FastInput";
 
 function NestedCard({ children }) {
   return (
@@ -32,11 +31,9 @@ function RecipientLiabilityItem({ liability, onUpdate, onRemove }) {
         </FormControl>
         <FormControl>
           <FormLabel>Nominal</FormLabel>
-          <Input
-            as={CurrencyInput}
-            intlConfig={{ locale: "id-ID", currency: "IDR" }}
+          <FastCurrencyInput
             value={liability.amount}
-            onValueChange={(e) =>
+            onUpdate={(e) =>
               onUpdate((draft) => {
                 draft.amount = parseInt(e);
               })
