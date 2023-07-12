@@ -1,12 +1,7 @@
 import PizZip from "pizzip";
 import Docxtemplater from "docxtemplater";
 import expressionParser from "docxtemplater/expressions";
-import { getItemById } from "./util";
-
-const numberFormat = new Intl.NumberFormat("id-ID", {
-  style: "currency",
-  currency: "IDR",
-});
+import { formatCurrency, getItemById } from "./util";
 
 function processData({ recipientList, lialibilityTypeList }) {
   return {
@@ -14,7 +9,7 @@ function processData({ recipientList, lialibilityTypeList }) {
       Nama: name,
       Tanggungan: lialibilityList.map(({ id, amount }) => ({
         Nama: getItemById(lialibilityTypeList, id).name,
-        Nominal: numberFormat.format(amount),
+        Nominal: formatCurrency(amount),
       })),
     })),
   };

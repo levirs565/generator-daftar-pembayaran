@@ -7,6 +7,10 @@ export function removeItemById(array, id) {
   );
 }
 
+export function removeItemByIndex(array, index) {
+  array.splice(index, 1);
+}
+
 export function getItemById(array, id) {
   return array.find((item) => item.id === id);
 }
@@ -17,4 +21,14 @@ export function getItemIndexById(array, id) {
 
 export function generateId() {
   return nanoid();
+}
+
+const numberFormat = new Intl.NumberFormat("id-ID", {
+  style: "currency",
+  currency: "IDR",
+  minimumFractionDigits: 0,
+});
+
+export function formatCurrency(amount) {
+  return numberFormat.format(amount);
 }

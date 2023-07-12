@@ -1,9 +1,13 @@
 import { Input, Textarea } from "@chakra-ui/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CurrencyInput from "react-currency-input-field";
 
 export function FastTextArea({ value, onUpdate, ...rest }) {
-  const [currentValue, setCurrentValue] = useState(value);
+  const [currentValue, setCurrentValue] = useState();
+
+  useEffect(() => {
+    setCurrentValue(value);
+  }, [value]);
 
   return (
     <Textarea
@@ -16,7 +20,12 @@ export function FastTextArea({ value, onUpdate, ...rest }) {
 }
 
 export function FastCurrencyInput({ value, onUpdate, ...rest }) {
-  const [currentValue, setCurrentValue] = useState(value);
+  const [currentValue, setCurrentValue] = useState();
+
+  useEffect(() => {
+    setCurrentValue(value);
+  }, [value]);
+
   return (
     <Input
       as={CurrencyInput}
@@ -30,7 +39,12 @@ export function FastCurrencyInput({ value, onUpdate, ...rest }) {
 }
 
 export function FastInput({ value, onUpdate, ...rest }) {
-  const [currentValue, setCurrentValue] = useState(value);
+  const [currentValue, setCurrentValue] = useState();
+
+  useEffect(() => {
+    setCurrentValue(value);
+  }, [value]);
+
   return (
     <Input
       value={currentValue}

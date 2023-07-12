@@ -1,84 +1,89 @@
-import { Button, FormControl, FormLabel, VStack, Flex } from "@chakra-ui/react";
-import { motion } from "framer-motion";
-import { generateId, getItemIndexById, removeItemById } from "./util";
 import {
-  AccordionItemAnimatable,
-  AccordionBodyMotionProps,
-  AccordionAnimatable,
-  useAccordionAutoScroller,
-} from "./AccordionAnimatable";
-import { FastCurrencyInput, FastTextArea } from "./FastInput";
+  Button,
+  VStack,
+  Flex,
+  Card,
+  CardHeader,
+  Heading,
+  Text,
+  Box,
+  Circle,
+  IconButton,
+  useDisclosure,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+} from "@chakra-ui/react";
+import {
+  formatCurrency,
+  generateId,
+  getItemIndexById,
+  removeItemByIndex,
+} from "./util";
+import { Icon } from "@chakra-ui/icons";
+import { RiMore2Fill } from "react-icons/ri";
+import { LialibilityTypeModal } from "./LialibilityTypeModal";
+import { RiPencilFill } from "react-icons/ri";
+import { RiDeleteBinFill } from "react-icons/ri";
+import { useState } from "react";
 
-function LialibilityTypeItem({ liability, onUpdate, onRemove, index }) {
+function LialibilityTypeItem({ liability, index, onEdit, onDelete }) {
   return (
-    <AccordionItemAnimatable
-      id={liability.id}
-      title={`Tanggungan ke ${index + 1}`}
-      collapsedBodyTitle={liability.name}
-      expandedBody={
-        <>
-          <FormControl>
-            <FormLabel>Nama</FormLabel>
-            <motion.div {...AccordionBodyMotionProps}>
-              <FastTextArea
-                value={liability.name}
-                placeholder="Nama"
-                onUpdate={(e) =>
-                  onUpdate((draft) => {
-                    draft.name = e;
-                  })
-                }
-                onInput={(e) => {
-                  e.target.value = e.target.value.split("\n").join(" ");
-                }}
-                rows={2}
-              />
-            </motion.div>
-          </FormControl>
-          <FormControl>
-            <FormLabel>Nominal</FormLabel>
-            <FastCurrencyInput
-              value={liability.amount}
-              onUpdate={(e) =>
-                onUpdate((draft) => {
-                  draft.amount = parseInt(e);
-                })
-              }
+    <Card size="sm">
+      <CardHeader>
+        <Flex gap={3} alignItems="center">
+          <Circle size={12} bg="gray.100">
+            <Text fontSize="xl">{index + 1}</Text>
+          </Circle>
+          <Box flexGrow={1}>
+            <Heading as="h2" size="sm">
+              {liability.name}
+            </Heading>
+            <Text fontSize="md">{formatCurrency(liability.amount)}</Text>
+          </Box>
+          <Menu isLazy autoSelect={false}>
+            <MenuButton
+              as={IconButton}
+              size="lg"
+              aria-label="Edit"
+              variant="ghost"
+              icon={<Icon as={RiMore2Fill} />}
             />
-          </FormControl>
-          <Flex mt={4} justifyContent="end">
-            <Button colorScheme="red" onClick={onRemove}>
-              Hapus
-            </Button>
-          </Flex>
-        </>
-      }
-    />
+            <MenuList>
+              <MenuItem
+                icon={<Icon as={RiPencilFill} />}
+                onClick={() => onEdit(liability)}
+              >
+                Ubah
+              </MenuItem>
+              <MenuItem
+                icon={<Icon as={RiDeleteBinFill} />}
+                onClick={() => onDelete(liability)}
+              >
+                Hapus
+              </MenuItem>
+            </MenuList>
+          </Menu>
+        </Flex>
+      </CardHeader>
+    </Card>
   );
 }
 
-function LialibilityTypeList({ list, onUpdateList, ...rest }) {
+function LialibilityTypeList({ list, onEdit, onDelete }) {
   return (
-    <AccordionAnimatable allowToggle {...rest}>
+    <>
       {list.map((item, index) => (
         <LialibilityTypeItem
           key={item.id}
           index={index}
           liability={item}
-          onUpdate={(fn) => {
-            const index = getItemIndexById(list, item.id);
-            onUpdateList((draft) => {
-              fn(draft[index]);
-            });
-          }}
-          onRemove={() =>
-            onUpdateList((draft) => {
-              removeItemById(draft, item.id);
-            })
-          }
+          onEdit={onEdit}
+          onDelete={onDelete}
         />
       ))}
-    </AccordionAnimatable>
+    </>
   );
 }
 
@@ -93,27 +98,58 @@ function LialibilityTypeAdder({ onAdd }) {
 }
 
 export function LialibilityTypesTab({ list, onUpdateList }) {
-  const { accordionProps, onBeforeAddItem } = useAccordionAutoScroller();
-
-  function addItem() {
-    onBeforeAddItem(list);
-    onUpdateList((draft) => {
-      draft.push({
-        id: generateId(),
-        name: "",
-        amount: 0,
-      });
-    });
-  }
+  const {
+    isOpen: isModalOpen,
+    onClose: onModalClose,
+    onOpen: onModalOpen,
+  } = useDisclosure();
+  const [modalItem, setModalItem] = useState(null);
 
   return (
     <VStack alignItems="stretch" gap={4}>
       <LialibilityTypeList
         list={list}
-        onUpdateList={onUpdateList}
-        {...accordionProps}
+        onEdit={(item) => {
+          setModalItem(item);
+          onModalOpen();
+        }}
+        onDelete={(item) => {
+          console.log(item);
+          const index = getItemIndexById(list, item.id);
+          onUpdateList((draft) => {
+            removeItemByIndex(draft, index);
+          });
+        }}
       />
-      <LialibilityTypeAdder onAdd={addItem} />
+      <LialibilityTypeAdder
+        onAdd={() => {
+          setModalItem(null);
+          onModalOpen();
+        }}
+      />
+      <LialibilityTypeModal
+        isOpen={isModalOpen}
+        onClose={onModalClose}
+        lialibility={modalItem}
+        onSubmit={({ id, name, amount }) => {
+          if (!id) {
+            onUpdateList((draft) => {
+              draft.push({
+                id: generateId(),
+                name,
+                amount,
+              });
+            });
+          } else {
+            const index = getItemIndexById(list, id);
+            onUpdateList((draft) => {
+              draft[index].name = name;
+              draft[index].amount = amount;
+            });
+          }
+          setModalItem(null);
+        }}
+      />
     </VStack>
   );
 }
