@@ -3,7 +3,6 @@ import {
   FormControl,
   FormErrorMessage,
   FormLabel,
-  Heading,
   Input,
   Modal,
   ModalBody,
@@ -36,11 +35,13 @@ function RecipientModalContent({ initialItem, onClose, onSubmit }) {
           />
           <FormErrorMessage>Nama tidak boleh kosong.</FormErrorMessage>
         </FormControl>
-        <Heading size={"sm"}>Tanggungan</Heading>
-        <RecipientLiabilityList
-          list={lialibilityList}
-          onUpdateList={updateLialibilityList}
-        />
+        <FormControl>
+          <FormLabel>Tanggungan</FormLabel>
+          <RecipientLiabilityList
+            list={lialibilityList}
+            onUpdateList={updateLialibilityList}
+          />
+        </FormControl>
       </ModalBody>
       <ModalFooter>
         <Button variant="ghost" onClick={onClose}>
