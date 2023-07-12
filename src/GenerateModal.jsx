@@ -1,6 +1,7 @@
 import { DownloadIcon, ExternalLinkIcon } from "@chakra-ui/icons";
 import {
   Button,
+  Collapse,
   HStack,
   Input,
   Link,
@@ -13,6 +14,7 @@ import {
   Text,
   VStack,
   VisuallyHiddenInput,
+  useDisclosure,
   useToast,
 } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
@@ -59,6 +61,11 @@ export function GenerateModal({
   const [file, setFile] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultLink, setResultLink] = useState(null);
+  const {
+    isOpen: isFileShow,
+    onOpen: onFileShow,
+    onClose: onFileHide,
+  } = useDisclosure();
   const fileInput = useRef();
   const toast = useToast();
 
@@ -72,6 +79,7 @@ export function GenerateModal({
         name,
         href,
       });
+      onFileShow();
     } else {
       toast({
         title: "Error Saat Menghasilkan Dokumen",
@@ -134,25 +142,32 @@ export function GenerateModal({
             >
               Hasilkan Dokumen
             </Button>
-            {resultLink && (
-              <Button
-                as={"a"}
-                variant="outline"
-                leftIcon={<DownloadIcon />}
-                colorScheme="orange"
-                download={resultLink.name}
-                href={resultLink.href}
-                onClick={() => {
-                  const href = resultLink.href;
-                  window.setTimeout(() => {
-                    setResultLink(null);
-                    URL.revokeObjectURL(href);
-                  }, 1000);
-                }}
-              >
-                Unduh Dokumen
-              </Button>
-            )}
+            <Collapse in={isFileShow} unmountOnExit>
+              <VStack>
+                <Text>
+                  Dokumen berikut adalah dokumen yang terakhir kali dihasilkan.
+                  Tombol di bawah akan hilang setelah file di unduh.
+                </Text>
+                <Button
+                  as={"a"}
+                  variant="outline"
+                  leftIcon={<DownloadIcon />}
+                  colorScheme="orange"
+                  download={resultLink ? resultLink.name : ""}
+                  href={resultLink ? resultLink.href : ""}
+                  onClick={() => {
+                    const href = resultLink.href;
+                    window.setTimeout(() => {
+                      onFileHide();
+                      URL.revokeObjectURL(href);
+                      setResultLink(null);
+                    }, 1000);
+                  }}
+                >
+                  Unduh Dokumen
+                </Button>
+              </VStack>
+            </Collapse>
           </VStack>
         </ModalBody>
       </ModalContent>
