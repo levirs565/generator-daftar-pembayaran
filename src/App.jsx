@@ -23,7 +23,50 @@ import { LialibilityTypeListContext } from "./LialibilityTypeListContext";
 import { GenerateModal } from "./GenerateModal";
 import { HamburgerIcon } from "@chakra-ui/icons";
 
-function App() {
+function AppBar({ headerHeight, onGenereteItemClick }) {
+  return (
+    <Flex
+      as="header"
+      px={4}
+      py={2}
+      bg="pink.700"
+      gap={2}
+      alignItems="center"
+      position="sticky"
+      top={0}
+      h={headerHeight}
+    >
+      <Menu>
+        <MenuButton
+          as={IconButton}
+          aria-label="Menu"
+          icon={<HamburgerIcon boxSize={5} />}
+          variant="ghost"
+          color="white"
+          _hover={{
+            bg: "blackAlpha.300",
+          }}
+          _active={{
+            bg: "blackAlpha.500",
+          }}
+          isRound
+        />
+        <Portal>
+          <MenuList zIndex={200}>
+            <MenuItem onClick={() => onGenereteItemClick()}>
+              Hasilkan Dokumen
+            </MenuItem>
+          </MenuList>
+        </Portal>
+      </Menu>
+      <Heading color="white" fontSize="lg">
+        Generator Daftar Pembayaran
+      </Heading>
+    </Flex>
+  );
+}
+
+function AppMain({ headerHeight, isGenerateModalOpen, onGenerateModalClose }) {
   const [recipientList, updateRecipientList] = useImmer([]);
   const [lialibilityTypeList, updateLialibilityTypeList] = useImmer([
     {
@@ -37,54 +80,8 @@ function App() {
       amount: 4000,
     },
   ]);
-  const {
-    isOpen: isGenerateModalOpen,
-    onOpen: onGenerateModalOpen,
-    onClose: onGenerateModalClose,
-  } = useDisclosure();
-
-  const headerHeight = 14;
-
   return (
-    <ChakraProvider>
-      <Flex
-        as="header"
-        px={4}
-        py={2}
-        bg="pink.700"
-        gap={2}
-        alignItems="center"
-        position="sticky"
-        top={0}
-        h={headerHeight}
-      >
-        <Menu>
-          <MenuButton
-            as={IconButton}
-            aria-label="Menu"
-            icon={<HamburgerIcon boxSize={5} />}
-            variant="ghost"
-            color="white"
-            _hover={{
-              bg: "blackAlpha.300",
-            }}
-            _active={{
-              bg: "blackAlpha.500",
-            }}
-            isRound
-          />
-          <Portal>
-            <MenuList zIndex={200}>
-              <MenuItem onClick={() => onGenerateModalOpen()}>
-                Hasilkan Dokumen
-              </MenuItem>
-            </MenuList>
-          </Portal>
-        </Menu>
-        <Heading color="white" fontSize="lg">
-          Generator Daftar Pembayaran
-        </Heading>
-      </Flex>
+    <>
       <Tabs colorScheme="pink" variant="soft-rounded">
         <TabList
           zIndex={100}
@@ -119,6 +116,30 @@ function App() {
         onClose={onGenerateModalClose}
         lialibilityTypeList={lialibilityTypeList}
         recipientList={recipientList}
+      />
+    </>
+  );
+}
+
+function App() {
+  const {
+    isOpen: isGenerateModalOpen,
+    onOpen: onGenerateModalOpen,
+    onClose: onGenerateModalClose,
+  } = useDisclosure();
+
+  const headerHeight = 14;
+
+  return (
+    <ChakraProvider>
+      <AppBar
+        headerHeight={headerHeight}
+        onGenereteItemClick={onGenerateModalOpen}
+      />
+      <AppMain
+        headerHeight={headerHeight}
+        isGenerateModalOpen={isGenerateModalOpen}
+        onGenerateModalClose={onGenerateModalClose}
       />
     </ChakraProvider>
   );
