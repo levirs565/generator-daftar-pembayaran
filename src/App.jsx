@@ -36,6 +36,7 @@ function AppBar({ headerHeight, onGenereteItemClick }) {
       position="sticky"
       top={0}
       h={headerHeight}
+      zIndex={100}
     >
       <Menu>
         <MenuButton
