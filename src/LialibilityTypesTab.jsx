@@ -1,22 +1,12 @@
-import {
-  Button,
-  FormControl,
-  FormLabel,
-  VStack,
-  Flex,
-} from "@chakra-ui/react";
+import { Button, FormControl, FormLabel, VStack, Flex } from "@chakra-ui/react";
 import { motion } from "framer-motion";
-import {
-  generateId,
-  getItemIndexById,
-  removeItemById,
-} from "./util";
+import { generateId, getItemIndexById, removeItemById } from "./util";
 import {
   AccordionItemAnimatable,
   AccordionBodyMotionProps,
   AccordionAnimatable,
+  useAccordionAutoScroller,
 } from "./AccordionAnimatable";
-import { useEffect, useRef, useState } from "react";
 import { FastCurrencyInput, FastTextArea } from "./FastInput";
 
 function LialibilityTypeItem({ liability, onUpdate, onRemove, index }) {
@@ -67,9 +57,9 @@ function LialibilityTypeItem({ liability, onUpdate, onRemove, index }) {
   );
 }
 
-function LialibilityTypeList({ list, onUpdateList, index, onChange }) {
+function LialibilityTypeList({ list, onUpdateList, ...rest }) {
   return (
-    <AccordionAnimatable allowToggle index={index} onChange={onChange}>
+    <AccordionAnimatable allowToggle {...rest}>
       {list.map((item, index) => (
         <LialibilityTypeItem
           key={item.id}
@@ -103,12 +93,10 @@ function LialibilityTypeAdder({ onAdd }) {
 }
 
 export function LialibilityTypesTab({ list, onUpdateList }) {
-  const [openIndex, setOpenIndex] = useState(-1);
-  const pendingScroll = useRef(false);
+  const { accordionProps, onBeforeAddItem } = useAccordionAutoScroller();
 
   function addItem() {
-    setOpenIndex(list.length);
-    pendingScroll.current = true;
+    onBeforeAddItem(list);
     onUpdateList((draft) => {
       draft.push({
         id: generateId(),
@@ -118,20 +106,12 @@ export function LialibilityTypesTab({ list, onUpdateList }) {
     });
   }
 
-  useEffect(() => {
-    if (pendingScroll.current) {
-      window.scrollTo(0, document.body.scrollHeight);
-      pendingScroll.current = false;
-    }
-  });
-
   return (
     <VStack alignItems="stretch" gap={4}>
       <LialibilityTypeList
         list={list}
         onUpdateList={onUpdateList}
-        index={openIndex}
-        onChange={(index) => setOpenIndex(index)}
+        {...accordionProps}
       />
       <LialibilityTypeAdder onAdd={addItem} />
     </VStack>

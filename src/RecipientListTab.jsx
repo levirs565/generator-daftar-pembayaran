@@ -13,6 +13,7 @@ import {
   AccordionAnimatable,
   AccordionBodyMotionProps,
   AccordionItemAnimatable,
+  useAccordionAutoScroller,
 } from "./AccordionAnimatable";
 import { motion } from "framer-motion";
 import { FastInput } from "./FastInput";
@@ -59,9 +60,9 @@ function RecipientItem({ recipient, index, onUpdate, onRemove }) {
   );
 }
 
-function RecipientList({ list, onUpdateList }) {
+function RecipientList({ list, onUpdateList, ...rest }) {
   return (
-    <AccordionAnimatable allowToggle>
+    <AccordionAnimatable allowToggle {...rest}>
       {list.map((item, index) => (
         <RecipientItem
           key={item.id}
@@ -100,19 +101,26 @@ function RecipientAdder({ onAdd }) {
 }
 
 export function RecipientListTab({ list, onUpdateList }) {
+  const { accordionProps, onBeforeAddItem } = useAccordionAutoScroller();
+
   return (
     <>
-      <RecipientList list={list} onUpdateList={onUpdateList} />
+      <RecipientList
+        list={list}
+        onUpdateList={onUpdateList}
+        {...accordionProps}
+      />
       <RecipientAdder
-        onAdd={() =>
+        onAdd={() => {
+          onBeforeAddItem(list);
           onUpdateList((draft) => {
             draft.push({
               id: generateId(),
               name: "",
               lialibilityList: [],
             });
-          })
-        }
+          });
+        }}
       />
     </>
   );

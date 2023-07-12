@@ -8,6 +8,7 @@ import {
   Accordion,
 } from "@chakra-ui/react";
 import { LayoutGroup, MotionConfig, motion } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
 
 /* layout and layoutDependendy is needed to make Text not animated when other accordion expanded. Why it does trigger animation? Because element are recreated. When Text layoutDependency is unspecified then when text created sometime it is hidden */
 
@@ -58,4 +59,27 @@ export function AccordionAnimatable(props) {
       <Accordion {...props} />
     </MotionConfig>
   );
+}
+
+export function useAccordionAutoScroller() {
+  const [index, setIndex] = useState(-1);
+  const pendingScroll = useRef(false);
+
+  useEffect(() => {
+    if (pendingScroll.current) {
+      window.scrollTo(0, document.body.scrollHeight);
+      pendingScroll.current = false;
+    }
+  });
+
+  return {
+    accordionProps: {
+      index,
+      onChange: (index) => setIndex(index),
+    },
+    onBeforeAddItem: (list) => {
+      setIndex(list.length);
+      pendingScroll.current = true;
+    },
+  };
 }
