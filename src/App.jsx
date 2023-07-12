@@ -22,6 +22,7 @@ import { LialibilityTypesTab } from "./LialibilityTypesTab";
 import { LialibilityTypeListContext } from "./LialibilityTypeListContext";
 import { GenerateModal } from "./GenerateModal";
 import { HamburgerIcon } from "@chakra-ui/icons";
+import { theme } from "./theme";
 
 function AppBar({ headerHeight, onGenereteItemClick }) {
   return (
@@ -131,7 +132,7 @@ function App() {
   const headerHeight = 14;
 
   return (
-    <ChakraProvider>
+    <ChakraProvider theme={theme}>
       <AppBar
         headerHeight={headerHeight}
         onGenereteItemClick={onGenerateModalOpen}
