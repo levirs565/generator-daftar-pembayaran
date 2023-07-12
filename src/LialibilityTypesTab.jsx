@@ -1,21 +1,23 @@
 import {
-  Input,
   Button,
   FormControl,
   FormLabel,
   VStack,
   Flex,
-  Textarea,
 } from "@chakra-ui/react";
-import CurrencyInput from "react-currency-input-field";
 import { motion } from "framer-motion";
-import { generateId, getItemById, removeItemById } from "./util";
+import {
+  generateId,
+  getItemIndexById,
+  removeItemById,
+} from "./util";
 import {
   AccordionItemAnimatable,
   AccordionBodyMotionProps,
   AccordionAnimatable,
 } from "./AccordionAnimatable";
 import { useEffect, useRef, useState } from "react";
+import { FastCurrencyInput, FastTextArea } from "./FastInput";
 
 function LialibilityTypeItem({ liability, onUpdate, onRemove, index }) {
   return (
@@ -28,12 +30,12 @@ function LialibilityTypeItem({ liability, onUpdate, onRemove, index }) {
           <FormControl>
             <FormLabel>Nama</FormLabel>
             <motion.div {...AccordionBodyMotionProps}>
-              <Textarea
+              <FastTextArea
                 value={liability.name}
                 placeholder="Nama"
-                onChange={(e) =>
+                onUpdate={(e) =>
                   onUpdate((draft) => {
-                    draft.name = e.target.value;
+                    draft.name = e;
                   })
                 }
                 onInput={(e) => {
@@ -45,11 +47,9 @@ function LialibilityTypeItem({ liability, onUpdate, onRemove, index }) {
           </FormControl>
           <FormControl>
             <FormLabel>Nominal</FormLabel>
-            <Input
-              as={CurrencyInput}
-              intlConfig={{ locale: "id-ID", currency: "IDR" }}
+            <FastCurrencyInput
               value={liability.amount}
-              onValueChange={(e) =>
+              onUpdate={(e) =>
                 onUpdate((draft) => {
                   draft.amount = parseInt(e);
                 })
@@ -75,11 +75,12 @@ function LialibilityTypeList({ list, onUpdateList, index, onChange }) {
           key={item.id}
           index={index}
           liability={item}
-          onUpdate={(fn) =>
+          onUpdate={(fn) => {
+            const index = getItemIndexById(list, item.id);
             onUpdateList((draft) => {
-              fn(getItemById(draft, item.id));
-            })
-          }
+              fn(draft[index]);
+            });
+          }}
           onRemove={() =>
             onUpdateList((draft) => {
               removeItemById(draft, item.id);

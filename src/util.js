@@ -11,6 +11,10 @@ export function getItemById(array, id) {
   return array.find((item) => item.id === id);
 }
 
+export function getItemIndexById(array, id) {
+  return array.findIndex((item) => item.id === id);
+}
+
 export function generateId() {
   return nanoid();
 }
