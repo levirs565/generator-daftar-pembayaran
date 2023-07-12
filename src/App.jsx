@@ -66,7 +66,10 @@ function App() {
             </LialibilityTypeListContext.Provider>
           </TabPanel>
           <TabPanel>
-            <GenerateTab />
+            <GenerateTab
+              recipientList={recipientList}
+              lialibilityTypeList={lialibilityTypeList}
+            />
           </TabPanel>
         </TabPanels>
       </Tabs>
