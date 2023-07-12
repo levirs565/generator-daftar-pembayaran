@@ -13,21 +13,13 @@ import {
   Textarea,
 } from "@chakra-ui/react";
 import { FastCurrencyInput } from "./FastInput";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 function LialibilityTypeModalContent({ item, isNew, onSubmit, onClose }) {
   const [name, setName] = useState(item ? item.name : "");
-  const [amount, setAmount] = useState(0);
+  const [amount, setAmount] = useState(item ? item.amount : 0);
 
   const isNameInvalid = name.length === 0;
-
-  useEffect(() => {
-    if (item) {
-      setAmount(item.amount);
-    } else {
-      setAmount(0);
-    }
-  }, [item]);
 
   return (
     <ModalContent>
