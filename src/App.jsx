@@ -82,7 +82,7 @@ function AppMain({ headerHeight, isGenerateModalOpen, onGenerateModalClose }) {
   ]);
   return (
     <>
-      <Tabs colorScheme="pink" variant="soft-rounded" isLazy>
+      <Tabs colorScheme="pink" variant="soft-rounded">
         <TabList
           zIndex={100}
           bg="pink.700"
