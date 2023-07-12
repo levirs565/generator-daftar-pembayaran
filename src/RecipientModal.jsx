@@ -1,6 +1,7 @@
 import {
   Button,
   FormControl,
+  FormErrorMessage,
   FormLabel,
   Heading,
   Modal,
@@ -20,18 +21,20 @@ function RecipientModalContent({ initialItem, onClose, onSubmit }) {
   const [lialibilityList, updateLialibilityList] = useImmer(
     initialItem ? initialItem.lialibilityList : []
   );
+  const isNameInvalid = name.length === 0;
   const isNew = !initialItem;
   return (
     <ModalContent>
       <ModalHeader>{isNew ? "Buat Penerima" : "Ubah Penerima"}</ModalHeader>
       <ModalBody>
-        <FormControl>
+        <FormControl isInvalid={isNameInvalid} isRequired>
           <FormLabel>Nama</FormLabel>
           <FastInput
             value={name}
             placeholder="Nama Penerima"
             onUpdate={(e) => setName(e)}
           />
+          <FormErrorMessage>Nama tidak boleh kosong.</FormErrorMessage>
         </FormControl>
         <Heading size={"sm"}>Tanggungan</Heading>
         <RecipientLiabilityList
@@ -44,6 +47,7 @@ function RecipientModalContent({ initialItem, onClose, onSubmit }) {
           Batal
         </Button>
         <Button
+          isDisabled={isNameInvalid}
           colorScheme="pink"
           onClick={() => {
             onClose();

@@ -1,6 +1,7 @@
 import {
   Button,
   FormControl,
+  FormErrorMessage,
   FormLabel,
   Modal,
   ModalBody,
@@ -17,6 +18,8 @@ function LialibilityTypeModalContent({ item, isNew, onSubmit, onClose }) {
   const [name, setName] = useState(item ? item.name : "");
   const [amount, setAmount] = useState(0);
 
+  const isNameInvalid = name.length === 0;
+
   useEffect(() => {
     if (item) {
       setAmount(item.amount);
@@ -32,7 +35,7 @@ function LialibilityTypeModalContent({ item, isNew, onSubmit, onClose }) {
       </ModalHeader>
       <ModalCloseButton />
       <ModalBody>
-        <FormControl>
+        <FormControl isInvalid={isNameInvalid} isRequired>
           <FormLabel>Nama</FormLabel>
           <FastTextArea
             value={name}
@@ -44,6 +47,7 @@ function LialibilityTypeModalContent({ item, isNew, onSubmit, onClose }) {
             rows={2}
             data-autofocus
           />
+          <FormErrorMessage>Nama tidak boleh kosong.</FormErrorMessage>
         </FormControl>
         <FormControl>
           <FormLabel>Nominal</FormLabel>
@@ -58,6 +62,7 @@ function LialibilityTypeModalContent({ item, isNew, onSubmit, onClose }) {
           Batal
         </Button>
         <Button
+          isDisabled={isNameInvalid}
           colorScheme="pink"
           onClick={() => {
             onClose();
