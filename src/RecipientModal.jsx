@@ -68,7 +68,6 @@ export function RecipientModal({ item, isOpen, onClose, onSubmit }) {
       onClose={onClose}
       scrollBehavior="inside"
       blockScrollOnMount={false}
-      trapFocus={false}
     >
       <ModalOverlay />
       <RecipientModalContent

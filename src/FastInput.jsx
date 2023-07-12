@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import CurrencyInput from "react-currency-input-field";
 
 export function FastTextArea({ value, onUpdate, ...rest }) {
-  const [currentValue, setCurrentValue] = useState();
+  const [currentValue, setCurrentValue] = useState(value);
 
   useEffect(() => {
     setCurrentValue(value);
@@ -20,7 +20,7 @@ export function FastTextArea({ value, onUpdate, ...rest }) {
 }
 
 export function FastCurrencyInput({ value, onUpdate, ...rest }) {
-  const [currentValue, setCurrentValue] = useState();
+  const [currentValue, setCurrentValue] = useState(value);
 
   useEffect(() => {
     setCurrentValue(value);
@@ -39,7 +39,7 @@ export function FastCurrencyInput({ value, onUpdate, ...rest }) {
 }
 
 export function FastInput({ value, onUpdate, ...rest }) {
-  const [currentValue, setCurrentValue] = useState();
+  const [currentValue, setCurrentValue] = useState(value);
 
   useEffect(() => {
     setCurrentValue(value);

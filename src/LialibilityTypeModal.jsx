@@ -42,6 +42,7 @@ function LialibilityTypeModalContent({ item, isNew, onSubmit, onClose }) {
               e.target.value = e.target.value.split("\n").join(" ");
             }}
             rows={2}
+            data-autofocus
           />
         </FormControl>
         <FormControl>
