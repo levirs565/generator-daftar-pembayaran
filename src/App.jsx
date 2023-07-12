@@ -7,13 +7,21 @@ import {
   TabPanel,
   Flex,
   Heading,
+  MenuButton,
+  Menu,
+  IconButton,
+  MenuList,
+  MenuItem,
+  Portal,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { useImmer } from "use-immer";
 import { generateId } from "./util";
 import { RecipientListTab } from "./RecipientListTab";
 import { LialibilityTypesTab } from "./LialibilityTypesTab";
 import { LialibilityTypeListContext } from "./LialibilityTypeListContext";
-import { GenerateTab } from "./GenerateTab";
+import { GenerateModal } from "./GenerateModal";
+import { HamburgerIcon } from "@chakra-ui/icons";
 
 function App() {
   const [recipientList, updateRecipientList] = useImmer([]);
@@ -29,26 +37,65 @@ function App() {
       amount: 4000,
     },
   ]);
+  const {
+    isOpen: isGenerateModalOpen,
+    onOpen: onGenerateModalOpen,
+    onClose: onGenerateModalClose,
+  } = useDisclosure();
+
+  const headerHeight = 14;
 
   return (
     <ChakraProvider>
-      <header>
-        <Flex px={4} pt={4} pb={2} bg="pink.700" textColor="white">
-          <Heading size="md">Generator Daftar Pembayaran</Heading>
-        </Flex>
-      </header>
+      <Flex
+        as="header"
+        px={4}
+        py={2}
+        bg="pink.700"
+        gap={2}
+        alignItems="center"
+        position="sticky"
+        top={0}
+        h={headerHeight}
+      >
+        <Menu>
+          <MenuButton
+            as={IconButton}
+            aria-label="Menu"
+            icon={<HamburgerIcon boxSize={5} />}
+            variant="ghost"
+            color="white"
+            _hover={{
+              bg: "blackAlpha.300",
+            }}
+            _active={{
+              bg: "blackAlpha.500",
+            }}
+            isRound
+          />
+          <Portal>
+            <MenuList zIndex={200}>
+              <MenuItem onClick={() => onGenerateModalOpen()}>
+                Hasilkan Dokumen
+              </MenuItem>
+            </MenuList>
+          </Portal>
+        </Menu>
+        <Heading color="white" fontSize="lg">
+          Generator Daftar Pembayaran
+        </Heading>
+      </Flex>
       <Tabs colorScheme="pink" variant="soft-rounded">
         <TabList
-          position="sticky"
-          top={0}
           zIndex={100}
           bg="pink.700"
           px={4}
           py={2}
+          pos="sticky"
+          top={headerHeight}
         >
           <Tab textColor="white">Jenis Tanggungan</Tab>
           <Tab textColor="white">Daftar Penerima</Tab>
-          <Tab textColor="white">Hasilkan</Tab>
         </TabList>
         <TabPanels>
           <TabPanel>
@@ -65,14 +112,14 @@ function App() {
               />
             </LialibilityTypeListContext.Provider>
           </TabPanel>
-          <TabPanel>
-            <GenerateTab
-              recipientList={recipientList}
-              lialibilityTypeList={lialibilityTypeList}
-            />
-          </TabPanel>
         </TabPanels>
       </Tabs>
+      <GenerateModal
+        isOpen={isGenerateModalOpen}
+        onClose={onGenerateModalClose}
+        lialibilityTypeList={lialibilityTypeList}
+        recipientList={recipientList}
+      />
     </ChakraProvider>
   );
 }
