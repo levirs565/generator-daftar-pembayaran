@@ -14,6 +14,7 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
+  useToast,
 } from "@chakra-ui/react";
 import { formatCurrency } from "./util";
 import { Icon } from "@chakra-ui/icons";
@@ -24,6 +25,7 @@ import { RiDeleteBinFill } from "react-icons/ri";
 import { useState } from "react";
 import { liabilityStore } from "./db";
 import { useLiveQuery } from "dexie-react-hooks";
+import { catchWithToast } from "./toastUtil";
 
 function LiabilityTypeItem({ liability, index, onEdit, onDelete }) {
   return (
@@ -101,7 +103,14 @@ export function LiabilityTypesTab() {
     onOpen: onModalOpen,
   } = useDisclosure();
   const [modalItem, setModalItem] = useState(null);
-  const list = useLiveQuery(() => liabilityStore.getAll());
+  const toast = useToast();
+  const list = useLiveQuery(() =>
+    catchWithToast(
+      toast,
+      "Gagal Mendapatkan Daftar Jenis Tanggungan",
+      liabilityStore.getAll()
+    )
+  );
 
   return (
     <VStack alignItems="stretch" gap={2}>
@@ -113,7 +122,11 @@ export function LiabilityTypesTab() {
             onModalOpen();
           }}
           onDelete={(item) => {
-            liabilityStore.delete(item);
+            catchWithToast(
+              toast,
+              "Gagal Menghapus Jenis Tanggungan",
+              liabilityStore.delete(item)
+            );
           }}
         />
       )}
@@ -129,9 +142,17 @@ export function LiabilityTypesTab() {
         liability={modalItem}
         onSubmit={(item) => {
           if (!item.id) {
-            liabilityStore.add(item);
+            catchWithToast(
+              toast,
+              "Gagal Menambahkan Jenis Tanggungan",
+              liabilityStore.add(item)
+            );
           } else {
-            liabilityStore.put(item);
+            catchWithToast(
+              toast,
+              "Gagal Mengubah Jenis Tanggungan",
+              liabilityStore.put(item)
+            );
           }
           setModalItem(null);
         }}

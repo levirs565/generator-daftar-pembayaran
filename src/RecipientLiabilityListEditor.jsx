@@ -5,6 +5,7 @@ import {
   FormControl,
   FormLabel,
   Box,
+  useToast,
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { getItemById, removeItemById } from "./util";
@@ -12,6 +13,7 @@ import { LiabilitySelect } from "./LiabilitySelect";
 import { FastCurrencyInput } from "./FastInput";
 import { useLiveQuery } from "dexie-react-hooks";
 import { liabilityStore } from "./db";
+import { catchWithToast } from "./toastUtil";
 
 function NestedCard({ children }) {
   return (
@@ -83,8 +85,14 @@ function RecipientLiabilityAdder({ typeList, onAdd }) {
 }
 
 export function RecipientLiabilityListEditor({ list, onUpdateList }) {
+  const toast = useToast();
   const unusedLiabilityTypeList = useLiveQuery(
-    () => liabilityStore.getAllExcept(list.map((item) => item.id)),
+    () =>
+      catchWithToast(
+        toast,
+        "Gagal Mendapatkan Daftar Tanggungan yang Bisa Ditambahkan",
+        liabilityStore.getAllExcept(list.map((item) => item.id))
+      ),
     [list]
   );
   return (
@@ -109,7 +117,11 @@ export function RecipientLiabilityListEditor({ list, onUpdateList }) {
         <RecipientLiabilityAdder
           typeList={unusedLiabilityTypeList}
           onAdd={async (typeId) => {
-            const item = await await liabilityStore.get(typeId);
+            const item = await catchWithToast(
+              toast,
+              "Gagal Menambahkan Tanggungan",
+              liabilityStore.get(typeId)
+            );
             const { name, amount } = item;
             onUpdateList((draft) => {
               draft.push({

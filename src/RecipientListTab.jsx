@@ -15,6 +15,7 @@ import {
   MenuItem,
   CardBody,
   useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
 import { formatCurrency } from "./util";
 import { RiPencilFill } from "react-icons/ri";
@@ -24,6 +25,7 @@ import { RecipientEditModal } from "./RecipientEditModal";
 import { useState } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
 import { recipientStore } from "./db";
+import { catchWithToast } from "./toastUtil";
 
 function RecipientItem({ item, index, onEdit, onDelete }) {
   return (
@@ -122,7 +124,14 @@ export function RecipientListTab() {
     onOpen: onModalOpen,
   } = useDisclosure();
   const [modalItem, setModalItem] = useState(null);
-  const list = useLiveQuery(() => recipientStore.getAll());
+  const toast = useToast();
+  const list = useLiveQuery(() =>
+    catchWithToast(
+      toast,
+      "Gagal Mendapatkan Daftar Penerima",
+      recipientStore.getAll()
+    )
+  );
 
   return (
     <>
@@ -134,7 +143,11 @@ export function RecipientListTab() {
             onModalOpen();
           }}
           onDelete={(item) => {
-            recipientStore.delete(item);
+            catchWithToast(
+              toast,
+              "Gagal Menghapus Penerima",
+              recipientStore.delete(item)
+            );
           }}
         />
       )}
@@ -148,9 +161,17 @@ export function RecipientListTab() {
         item={modalItem}
         onSubmit={(item) => {
           if (item.id) {
-            recipientStore.put(item);
+            catchWithToast(
+              toast,
+              "Gagal Mengubah Penerima",
+              recipientStore.put(item)
+            );
           } else {
-            recipientStore.add(item);
+            catchWithToast(
+              toast,
+              "Gagal Menambahkan Penerima",
+              recipientStore.add(item)
+            );
           }
           setModalItem(null);
         }}
