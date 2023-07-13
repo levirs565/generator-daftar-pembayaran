@@ -38,6 +38,7 @@ function AppBar({ headerHeight, onGenereteItemClick }) {
       top={0}
       h={headerHeight}
       zIndex={100}
+      shadow="lg"
     >
       <Menu>
         <MenuButton
@@ -80,6 +81,7 @@ function AppMain({ headerHeight, isGenerateModalOpen, onGenerateModalClose }) {
           py={2}
           pos="sticky"
           top={headerHeight}
+          shadow="lg"
         >
           <Tab textColor="white">Jenis Tanggungan</Tab>
           <Tab textColor="white">Daftar Penerima</Tab>
