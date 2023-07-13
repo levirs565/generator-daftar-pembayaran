@@ -82,3 +82,7 @@ class RecipientStore {
 
 export const liabilityStore = new LiabilityStore();
 export const recipientStore = new RecipientStore();
+
+export function openDb() {
+  return db.open();
+}

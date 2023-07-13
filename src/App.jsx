@@ -14,12 +14,16 @@ import {
   MenuItem,
   Portal,
   useDisclosure,
+  VStack,
+  Text,
 } from "@chakra-ui/react";
 import { RecipientListTab } from "./RecipientListTab";
 import { LialibilityTypesTab } from "./LialibilityTypesTab";
 import { GenerateModal } from "./GenerateModal";
 import { HamburgerIcon } from "@chakra-ui/icons";
 import { theme } from "./theme";
+import { openDb } from "./db";
+import { useEffect, useState } from "react";
 
 function AppBar({ headerHeight, onGenereteItemClick }) {
   return (
@@ -97,6 +101,19 @@ function AppMain({ headerHeight, isGenerateModalOpen, onGenerateModalClose }) {
   );
 }
 
+function AppDBError({ message }) {
+  return (
+    <VStack p={4} textAlign="center" alignItems="center">
+      <Heading>Kesalahan terjadi. Tidak dapat membuka basis data!</Heading>
+      <Text fontSize="xl">
+        Coba matikan mode penyamaran dan muat ulang aplikasi.
+      </Text>
+      <Text>Detail error:</Text>
+      <Text>{message}</Text>
+    </VStack>
+  );
+}
+
 function App() {
   const {
     isOpen: isGenerateModalOpen,
@@ -105,6 +122,17 @@ function App() {
   } = useDisclosure();
 
   const headerHeight = 14;
+  const [dbState, setDbState] = useState({ type: "wait" });
+
+  useEffect(() => {
+    openDb()
+      .then(() => {
+        setDbState({ type: "opened" });
+      })
+      .catch((e) => {
+        setDbState({ type: "error", message: e.message });
+      });
+  }, []);
 
   return (
     <ChakraProvider theme={theme}>
@@ -112,11 +140,14 @@ function App() {
         headerHeight={headerHeight}
         onGenereteItemClick={onGenerateModalOpen}
       />
-      <AppMain
-        headerHeight={headerHeight}
-        isGenerateModalOpen={isGenerateModalOpen}
-        onGenerateModalClose={onGenerateModalClose}
-      />
+      {dbState.type === "opened" && (
+        <AppMain
+          headerHeight={headerHeight}
+          isGenerateModalOpen={isGenerateModalOpen}
+          onGenerateModalClose={onGenerateModalClose}
+        />
+      )}
+      {dbState.type === "error" && <AppDBError message={dbState.message} />}
     </ChakraProvider>
   );
 }
