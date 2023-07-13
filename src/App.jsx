@@ -4,7 +4,6 @@ import {
   TabList,
   TabPanels,
   Tab,
-  TabPanel,
   Flex,
   Heading,
   MenuButton,
@@ -87,12 +86,8 @@ function AppMain({ headerHeight, isGenerateModalOpen, onGenerateModalClose }) {
           <Tab textColor="white">Daftar Penerima</Tab>
         </TabList>
         <TabPanels>
-          <TabPanel>
-            <LiabilityTypesTab />
-          </TabPanel>
-          <TabPanel mb={16}>
-            <RecipientListTab />
-          </TabPanel>
+          <LiabilityTypesTab />
+          <RecipientListTab />
         </TabPanels>
       </Tabs>
       <GenerateModal

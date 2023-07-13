@@ -15,6 +15,7 @@ import {
   MenuList,
   MenuItem,
   useToast,
+  TabPanel,
 } from "@chakra-ui/react";
 import { formatCurrency } from "./util";
 import { Icon } from "@chakra-ui/icons";
@@ -113,50 +114,52 @@ export function LiabilityTypesTab() {
   );
 
   return (
-    <VStack alignItems="stretch" gap={2}>
-      {list && (
-        <LiabilityTypeList
-          list={list}
-          onEdit={(item) => {
-            setModalItem(item);
+    <TabPanel>
+      <VStack alignItems="stretch" gap={2}>
+        {list && (
+          <LiabilityTypeList
+            list={list}
+            onEdit={(item) => {
+              setModalItem(item);
+              onModalOpen();
+            }}
+            onDelete={(item) => {
+              catchWithToast(
+                toast,
+                "Gagal Menghapus Jenis Tanggungan",
+                liabilityStore.delete(item)
+              );
+            }}
+          />
+        )}
+        <LiabilityTypeAdder
+          onAdd={() => {
+            setModalItem(null);
             onModalOpen();
           }}
-          onDelete={(item) => {
-            catchWithToast(
-              toast,
-              "Gagal Menghapus Jenis Tanggungan",
-              liabilityStore.delete(item)
-            );
+        />
+        <LiabilityTypeModal
+          isOpen={isModalOpen}
+          onClose={onModalClose}
+          liability={modalItem}
+          onSubmit={(item) => {
+            if (!item.id) {
+              catchWithToast(
+                toast,
+                "Gagal Menambahkan Jenis Tanggungan",
+                liabilityStore.add(item)
+              );
+            } else {
+              catchWithToast(
+                toast,
+                "Gagal Mengubah Jenis Tanggungan",
+                liabilityStore.put(item)
+              );
+            }
+            setModalItem(null);
           }}
         />
-      )}
-      <LiabilityTypeAdder
-        onAdd={() => {
-          setModalItem(null);
-          onModalOpen();
-        }}
-      />
-      <LiabilityTypeModal
-        isOpen={isModalOpen}
-        onClose={onModalClose}
-        liability={modalItem}
-        onSubmit={(item) => {
-          if (!item.id) {
-            catchWithToast(
-              toast,
-              "Gagal Menambahkan Jenis Tanggungan",
-              liabilityStore.add(item)
-            );
-          } else {
-            catchWithToast(
-              toast,
-              "Gagal Mengubah Jenis Tanggungan",
-              liabilityStore.put(item)
-            );
-          }
-          setModalItem(null);
-        }}
-      />
-    </VStack>
+      </VStack>
+    </TabPanel>
   );
 }

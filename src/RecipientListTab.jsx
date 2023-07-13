@@ -16,6 +16,7 @@ import {
   CardBody,
   useDisclosure,
   useToast,
+  TabPanel,
 } from "@chakra-ui/react";
 import { formatCurrency } from "./util";
 import { RiPencilFill } from "react-icons/ri";
@@ -134,7 +135,7 @@ export function RecipientListTab() {
   );
 
   return (
-    <>
+    <TabPanel mb={16}>
       {list && (
         <RecipientList
           list={list}
@@ -178,6 +179,6 @@ export function RecipientListTab() {
         isOpen={isModalOpen}
         onClose={onModalClose}
       />
-    </>
+    </TabPanel>
   );
 }
