@@ -84,7 +84,7 @@ function AppMain({ headerHeight, isGenerateModalOpen, onGenerateModalClose }) {
           <TabPanel>
             <LialibilityTypesTab />
           </TabPanel>
-          <TabPanel>
+          <TabPanel mb={16}>
             <RecipientListTab />
           </TabPanel>
         </TabPanels>
