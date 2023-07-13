@@ -1,5 +1,3 @@
-import { nanoid } from "nanoid";
-
 export function removeItemById(array, id) {
   array.splice(
     array.findIndex((item) => item.id === id),
@@ -17,10 +15,6 @@ export function getItemById(array, id) {
 
 export function getItemIndexById(array, id) {
   return array.findIndex((item) => item.id === id);
-}
-
-export function generateId() {
-  return nanoid();
 }
 
 const numberFormat = new Intl.NumberFormat("id-ID", {
