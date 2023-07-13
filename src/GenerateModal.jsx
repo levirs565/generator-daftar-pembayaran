@@ -121,6 +121,7 @@ export function GenerateModal({
                 ref={fileInput}
                 id="fileInput"
                 type="file"
+                accept=".docx"
                 onChange={(e) => setFile(e.target.files[0])}
               />
             </HStack>
