@@ -16,22 +16,16 @@ import {
   CardBody,
   useDisclosure,
 } from "@chakra-ui/react";
-import {
-  formatCurrency,
-  generateId,
-  getItemById,
-  getItemIndexById,
-  removeItemByIndex,
-} from "./util";
+import { formatCurrency } from "./util";
 import { RiPencilFill } from "react-icons/ri";
 import { RiDeleteBinFill } from "react-icons/ri";
 import { RiMore2Fill } from "react-icons/ri";
 import { RecipientEditModal } from "./RecipientEditModal";
-import { useContext, useState } from "react";
-import { LialibilityTypeListContext } from "./LialibilityTypeListContext";
+import { useState } from "react";
+import { useLiveQuery } from "dexie-react-hooks";
+import { recipientStore } from "./db";
 
 function RecipientItem({ item, index, onEdit, onDelete }) {
-  const liabilityTypeList = useContext(LialibilityTypeListContext);
   return (
     <Card size="sm">
       <CardHeader>
@@ -80,9 +74,7 @@ function RecipientItem({ item, index, onEdit, onDelete }) {
       <CardBody>
         {item.lialibilityList.map((item) => (
           <Box key={item.id}>
-            <Text fontWeight="bold">
-              {getItemById(liabilityTypeList, item.id).name}
-            </Text>
+            <Text fontWeight="bold">{item.name}</Text>
             <Text>{formatCurrency(item.amount)}</Text>
           </Box>
         ))}
@@ -123,29 +115,29 @@ function RecipientAdder({ onAdd }) {
   );
 }
 
-export function RecipientListTab({ list, onUpdateList }) {
+export function RecipientListTab() {
   const {
     isOpen: isModalOpen,
     onClose: onModalClose,
     onOpen: onModalOpen,
   } = useDisclosure();
   const [modalItem, setModalItem] = useState(null);
+  const list = useLiveQuery(() => recipientStore.getAll());
 
   return (
     <>
-      <RecipientList
-        list={list}
-        onEdit={(item) => {
-          setModalItem(item);
-          onModalOpen();
-        }}
-        onDelete={(item) => {
-          const index = getItemById(list, item.id);
-          onUpdateList((draft) => {
-            removeItemByIndex(draft, index);
-          });
-        }}
-      />
+      {list && (
+        <RecipientList
+          list={list}
+          onEdit={(item) => {
+            setModalItem(item);
+            onModalOpen();
+          }}
+          onDelete={(item) => {
+            recipientStore.delete(item);
+          }}
+        />
+      )}
       <RecipientAdder
         onAdd={() => {
           setModalItem(null);
@@ -156,20 +148,9 @@ export function RecipientListTab({ list, onUpdateList }) {
         item={modalItem}
         onSubmit={(item) => {
           if (item.id) {
-            const index = getItemIndexById(list, item.id);
-            onUpdateList((draft) => {
-              draft[index] = {
-                ...draft[index],
-                ...item,
-              };
-            });
+            recipientStore.put(item);
           } else {
-            onUpdateList((draft) => {
-              draft.push({
-                id: generateId(),
-                ...item,
-              });
-            });
+            recipientStore.add(item);
           }
           setModalItem(null);
         }}

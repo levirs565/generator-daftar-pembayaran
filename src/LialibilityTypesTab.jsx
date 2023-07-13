@@ -15,18 +15,15 @@ import {
   MenuList,
   MenuItem,
 } from "@chakra-ui/react";
-import {
-  formatCurrency,
-  generateId,
-  getItemIndexById,
-  removeItemByIndex,
-} from "./util";
+import { formatCurrency } from "./util";
 import { Icon } from "@chakra-ui/icons";
 import { RiMore2Fill } from "react-icons/ri";
 import { LialibilityTypeModal } from "./LialibilityTypeEditModal";
 import { RiPencilFill } from "react-icons/ri";
 import { RiDeleteBinFill } from "react-icons/ri";
 import { useState } from "react";
+import { liabilityStore } from "./db";
+import { useLiveQuery } from "dexie-react-hooks";
 
 function LialibilityTypeItem({ liability, index, onEdit, onDelete }) {
   return (
@@ -97,29 +94,29 @@ function LialibilityTypeAdder({ onAdd }) {
   );
 }
 
-export function LialibilityTypesTab({ list, onUpdateList }) {
+export function LialibilityTypesTab() {
   const {
     isOpen: isModalOpen,
     onClose: onModalClose,
     onOpen: onModalOpen,
   } = useDisclosure();
   const [modalItem, setModalItem] = useState(null);
+  const list = useLiveQuery(() => liabilityStore.getAll());
 
   return (
     <VStack alignItems="stretch" gap={2}>
-      <LialibilityTypeList
-        list={list}
-        onEdit={(item) => {
-          setModalItem(item);
-          onModalOpen();
-        }}
-        onDelete={(item) => {
-          const index = getItemIndexById(list, item.id);
-          onUpdateList((draft) => {
-            removeItemByIndex(draft, index);
-          });
-        }}
-      />
+      {list && (
+        <LialibilityTypeList
+          list={list}
+          onEdit={(item) => {
+            setModalItem(item);
+            onModalOpen();
+          }}
+          onDelete={(item) => {
+            liabilityStore.delete(item);
+          }}
+        />
+      )}
       <LialibilityTypeAdder
         onAdd={() => {
           setModalItem(null);
@@ -130,21 +127,11 @@ export function LialibilityTypesTab({ list, onUpdateList }) {
         isOpen={isModalOpen}
         onClose={onModalClose}
         lialibility={modalItem}
-        onSubmit={({ id, name, amount }) => {
-          if (!id) {
-            onUpdateList((draft) => {
-              draft.push({
-                id: generateId(),
-                name,
-                amount,
-              });
-            });
+        onSubmit={(item) => {
+          if (!item.id) {
+            liabilityStore.add(item);
           } else {
-            const index = getItemIndexById(list, id);
-            onUpdateList((draft) => {
-              draft[index].name = name;
-              draft[index].amount = amount;
-            });
+            liabilityStore.put(item);
           }
           setModalItem(null);
         }}

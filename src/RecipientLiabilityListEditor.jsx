@@ -6,11 +6,12 @@ import {
   FormLabel,
   Box,
 } from "@chakra-ui/react";
-import { useContext, useMemo, useState } from "react";
+import { useState } from "react";
 import { getItemById, removeItemById } from "./util";
 import { LialibilitySelect } from "./LiabilitySelect";
-import { LialibilityTypeListContext } from "./LialibilityTypeListContext";
 import { FastCurrencyInput } from "./FastInput";
+import { useLiveQuery } from "dexie-react-hooks";
+import { liabilityStore } from "./db";
 
 function NestedCard({ children }) {
   return (
@@ -21,13 +22,12 @@ function NestedCard({ children }) {
 }
 
 function RecipientLiabilityItemEditor({ liability, onUpdate, onRemove }) {
-  const liabilityTypeList = useContext(LialibilityTypeListContext);
   return (
     <NestedCard>
       <VStack>
         <FormControl>
           <FormLabel>Nama</FormLabel>
-          <Text>{getItemById(liabilityTypeList, liability.id).name}</Text>
+          <Text>{liability.name}</Text>
         </FormControl>
         <FormControl>
           <FormLabel>Nominal</FormLabel>
@@ -62,7 +62,7 @@ function RecipientLiabilityAdder({ typeList, onAdd }) {
           <FormLabel>Jenis Pembayaran</FormLabel>
           <LialibilitySelect
             value={selectedJenis}
-            onValueChange={(e) => setSelectedJenis(e.target.value)}
+            onValueChange={(e) => setSelectedJenis(parseInt(e.target.value))}
             typeList={typeList}
           />
         </FormControl>
@@ -83,16 +83,9 @@ function RecipientLiabilityAdder({ typeList, onAdd }) {
 }
 
 export function RecipientLiabilityListEditor({ list, onUpdateList }) {
-  const liabilityTypeList = useContext(LialibilityTypeListContext);
-  const unusedLialibilityTypeList = useMemo(
-    () =>
-      liabilityTypeList.filter(
-        (jenis) =>
-          list.findIndex(
-            (lialibilityList) => lialibilityList.id === jenis.id
-          ) === -1
-      ),
-    [liabilityTypeList, list]
+  const unusedLialibilityTypeList = useLiveQuery(
+    () => liabilityStore.getAllExcept(list.map((item) => item.id)),
+    [list]
   );
   return (
     <VStack alignItems="stretch" gap={2}>
@@ -112,17 +105,20 @@ export function RecipientLiabilityListEditor({ list, onUpdateList }) {
           }
         />
       ))}
-      {unusedLialibilityTypeList.length > 0 && (
+      {unusedLialibilityTypeList && unusedLialibilityTypeList.length > 0 && (
         <RecipientLiabilityAdder
           typeList={unusedLialibilityTypeList}
-          onAdd={(jenis) =>
+          onAdd={async (typeId) => {
+            const item = await await liabilityStore.get(typeId);
+            const { name, amount } = item;
             onUpdateList((draft) => {
               draft.push({
-                id: jenis,
-                amount: getItemById(liabilityTypeList, jenis).amount,
+                id: typeId,
+                name,
+                amount,
               });
-            })
-          }
+            });
+          }}
         />
       )}
     </VStack>

@@ -15,11 +15,8 @@ import {
   Portal,
   useDisclosure,
 } from "@chakra-ui/react";
-import { useImmer } from "use-immer";
-import { generateId } from "./util";
 import { RecipientListTab } from "./RecipientListTab";
 import { LialibilityTypesTab } from "./LialibilityTypesTab";
-import { LialibilityTypeListContext } from "./LialibilityTypeListContext";
 import { GenerateModal } from "./GenerateModal";
 import { HamburgerIcon } from "@chakra-ui/icons";
 import { theme } from "./theme";
@@ -69,19 +66,6 @@ function AppBar({ headerHeight, onGenereteItemClick }) {
 }
 
 function AppMain({ headerHeight, isGenerateModalOpen, onGenerateModalClose }) {
-  const [recipientList, updateRecipientList] = useImmer([]);
-  const [lialibilityTypeList, updateLialibilityTypeList] = useImmer([
-    {
-      id: generateId(),
-      name: "Tanggungan 1",
-      amount: 2500,
-    },
-    {
-      id: generateId(),
-      name: "Tanggungan 2",
-      amount: 4000,
-    },
-  ]);
   return (
     <>
       <Tabs colorScheme="pink" variant="soft-rounded">
@@ -98,26 +82,16 @@ function AppMain({ headerHeight, isGenerateModalOpen, onGenerateModalClose }) {
         </TabList>
         <TabPanels>
           <TabPanel>
-            <LialibilityTypesTab
-              list={lialibilityTypeList}
-              onUpdateList={updateLialibilityTypeList}
-            />
+            <LialibilityTypesTab />
           </TabPanel>
           <TabPanel>
-            <LialibilityTypeListContext.Provider value={lialibilityTypeList}>
-              <RecipientListTab
-                list={recipientList}
-                onUpdateList={updateRecipientList}
-              />
-            </LialibilityTypeListContext.Provider>
+            <RecipientListTab />
           </TabPanel>
         </TabPanels>
       </Tabs>
       <GenerateModal
         isOpen={isGenerateModalOpen}
         onClose={onGenerateModalClose}
-        lialibilityTypeList={lialibilityTypeList}
-        recipientList={recipientList}
       />
     </>
   );
