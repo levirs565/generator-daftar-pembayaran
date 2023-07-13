@@ -15,7 +15,7 @@ import {
 import { FastCurrencyInput } from "./FastInput";
 import { useState } from "react";
 
-function LialibilityTypeModalContent({ item, isNew, onSubmit, onClose }) {
+function LiabilityTypeModalContent({ item, isNew, onSubmit, onClose }) {
   const [name, setName] = useState(item ? item.name : "");
   const [amount, setAmount] = useState(item ? item.amount : 0);
 
@@ -73,8 +73,8 @@ function LialibilityTypeModalContent({ item, isNew, onSubmit, onClose }) {
   );
 }
 
-export function LialibilityTypeModal({
-  lialibility,
+export function LiabilityTypeModal({
+  liability,
   isOpen,
   onClose,
   onSubmit,
@@ -87,11 +87,11 @@ export function LialibilityTypeModal({
       blockScrollOnMount={false}
     >
       <ModalOverlay />
-      <LialibilityTypeModalContent
-        item={lialibility}
+      <LiabilityTypeModalContent
+        item={liability}
         onSubmit={onSubmit}
         onClose={onClose}
-        isNew={!lialibility}
+        isNew={!liability}
       />
     </Modal>
   );

@@ -39,7 +39,7 @@ function RecipientItem({ item, index, onEdit, onDelete }) {
             </Heading>
             <Text fontSize="md">
               {formatCurrency(
-                item.lialibilityList.reduce(
+                item.liabilityList.reduce(
                   (result, current) => result + current.amount,
                   0
                 )
@@ -72,7 +72,7 @@ function RecipientItem({ item, index, onEdit, onDelete }) {
         </Flex>
       </CardHeader>
       <CardBody>
-        {item.lialibilityList.map((item) => (
+        {item.liabilityList.map((item) => (
           <Box key={item.id}>
             <Text fontWeight="bold">{item.name}</Text>
             <Text>{formatCurrency(item.amount)}</Text>

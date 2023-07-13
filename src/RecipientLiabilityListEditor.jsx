@@ -8,7 +8,7 @@ import {
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { getItemById, removeItemById } from "./util";
-import { LialibilitySelect } from "./LiabilitySelect";
+import { LiabilitySelect } from "./LiabilitySelect";
 import { FastCurrencyInput } from "./FastInput";
 import { useLiveQuery } from "dexie-react-hooks";
 import { liabilityStore } from "./db";
@@ -60,7 +60,7 @@ function RecipientLiabilityAdder({ typeList, onAdd }) {
       <VStack>
         <FormControl>
           <FormLabel>Jenis Pembayaran</FormLabel>
-          <LialibilitySelect
+          <LiabilitySelect
             value={selectedJenis}
             onValueChange={(e) => setSelectedJenis(parseInt(e.target.value))}
             typeList={typeList}
@@ -83,7 +83,7 @@ function RecipientLiabilityAdder({ typeList, onAdd }) {
 }
 
 export function RecipientLiabilityListEditor({ list, onUpdateList }) {
-  const unusedLialibilityTypeList = useLiveQuery(
+  const unusedLiabilityTypeList = useLiveQuery(
     () => liabilityStore.getAllExcept(list.map((item) => item.id)),
     [list]
   );
@@ -105,9 +105,9 @@ export function RecipientLiabilityListEditor({ list, onUpdateList }) {
           }
         />
       ))}
-      {unusedLialibilityTypeList && unusedLialibilityTypeList.length > 0 && (
+      {unusedLiabilityTypeList && unusedLiabilityTypeList.length > 0 && (
         <RecipientLiabilityAdder
-          typeList={unusedLialibilityTypeList}
+          typeList={unusedLiabilityTypeList}
           onAdd={async (typeId) => {
             const item = await await liabilityStore.get(typeId);
             const { name, amount } = item;

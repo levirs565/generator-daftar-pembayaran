@@ -17,8 +17,8 @@ import { useImmer } from "use-immer";
 
 function RecipientEditModalContent({ initialItem, onClose, onSubmit }) {
   const [name, setName] = useState(initialItem ? initialItem.name : "");
-  const [lialibilityList, updateLialibilityList] = useImmer(
-    initialItem ? initialItem.lialibilityList : []
+  const [liabilityList, updateLiabilityList] = useImmer(
+    initialItem ? initialItem.liabilityList : []
   );
   const isNameInvalid = name.length === 0;
   const isNew = !initialItem;
@@ -38,8 +38,8 @@ function RecipientEditModalContent({ initialItem, onClose, onSubmit }) {
         <FormControl>
           <FormLabel>Tanggungan</FormLabel>
           <RecipientLiabilityListEditor
-            list={lialibilityList}
-            onUpdateList={updateLialibilityList}
+            list={liabilityList}
+            onUpdateList={updateLiabilityList}
           />
         </FormControl>
       </ModalBody>
@@ -55,7 +55,7 @@ function RecipientEditModalContent({ initialItem, onClose, onSubmit }) {
             onSubmit({
               ...initialItem,
               name,
-              lialibilityList,
+              liabilityList,
             });
           }}
         >

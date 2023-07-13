@@ -18,14 +18,14 @@ import {
 import { formatCurrency } from "./util";
 import { Icon } from "@chakra-ui/icons";
 import { RiMore2Fill } from "react-icons/ri";
-import { LialibilityTypeModal } from "./LialibilityTypeEditModal";
+import { LiabilityTypeModal } from "./LiabilityTypeEditModal";
 import { RiPencilFill } from "react-icons/ri";
 import { RiDeleteBinFill } from "react-icons/ri";
 import { useState } from "react";
 import { liabilityStore } from "./db";
 import { useLiveQuery } from "dexie-react-hooks";
 
-function LialibilityTypeItem({ liability, index, onEdit, onDelete }) {
+function LiabilityTypeItem({ liability, index, onEdit, onDelete }) {
   return (
     <Card size="sm">
       <CardHeader>
@@ -68,11 +68,11 @@ function LialibilityTypeItem({ liability, index, onEdit, onDelete }) {
   );
 }
 
-function LialibilityTypeList({ list, onEdit, onDelete }) {
+function LiabilityTypeList({ list, onEdit, onDelete }) {
   return (
     <>
       {list.map((item, index) => (
-        <LialibilityTypeItem
+        <LiabilityTypeItem
           key={item.id}
           index={index}
           liability={item}
@@ -84,7 +84,7 @@ function LialibilityTypeList({ list, onEdit, onDelete }) {
   );
 }
 
-function LialibilityTypeAdder({ onAdd }) {
+function LiabilityTypeAdder({ onAdd }) {
   return (
     <Flex alignSelf="end">
       <Button colorScheme="pink" onClick={onAdd} width={"100%"}>
@@ -94,7 +94,7 @@ function LialibilityTypeAdder({ onAdd }) {
   );
 }
 
-export function LialibilityTypesTab() {
+export function LiabilityTypesTab() {
   const {
     isOpen: isModalOpen,
     onClose: onModalClose,
@@ -106,7 +106,7 @@ export function LialibilityTypesTab() {
   return (
     <VStack alignItems="stretch" gap={2}>
       {list && (
-        <LialibilityTypeList
+        <LiabilityTypeList
           list={list}
           onEdit={(item) => {
             setModalItem(item);
@@ -117,16 +117,16 @@ export function LialibilityTypesTab() {
           }}
         />
       )}
-      <LialibilityTypeAdder
+      <LiabilityTypeAdder
         onAdd={() => {
           setModalItem(null);
           onModalOpen();
         }}
       />
-      <LialibilityTypeModal
+      <LiabilityTypeModal
         isOpen={isModalOpen}
         onClose={onModalClose}
-        lialibility={modalItem}
+        liability={modalItem}
         onSubmit={(item) => {
           if (!item.id) {
             liabilityStore.add(item);

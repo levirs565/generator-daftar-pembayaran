@@ -34,12 +34,12 @@ class LiabilityStore {
 }
 
 class RecipientStore {
-  async #mapFromDb({ id, name, lialibilityList }) {
+  async #mapFromDb({ id, name, liabilityList }) {
     return {
       id,
       name,
-      lialibilityList: await Promise.all(
-        lialibilityList.map(async ({ id, amount }) => ({
+      liabilityList: await Promise.all(
+        liabilityList.map(async ({ id, amount }) => ({
           id,
           name: (await liabilityStore.get(id)).name,
           amount,
@@ -47,11 +47,11 @@ class RecipientStore {
       ),
     };
   }
-  #mapToDb({ id, name, lialibilityList }) {
+  #mapToDb({ id, name, liabilityList }) {
     return {
       id,
       name,
-      lialibilityList: lialibilityList.map(({ id, amount }) => ({
+      liabilityList: liabilityList.map(({ id, amount }) => ({
         id,
         amount,
       })),

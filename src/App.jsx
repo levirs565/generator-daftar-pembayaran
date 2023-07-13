@@ -18,7 +18,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { RecipientListTab } from "./RecipientListTab";
-import { LialibilityTypesTab } from "./LialibilityTypesTab";
+import { LiabilityTypesTab } from "./LiabilityTypesTab";
 import { GenerateModal } from "./GenerateModal";
 import { HamburgerIcon } from "@chakra-ui/icons";
 import { theme } from "./theme";
@@ -86,7 +86,7 @@ function AppMain({ headerHeight, isGenerateModalOpen, onGenerateModalClose }) {
         </TabList>
         <TabPanels>
           <TabPanel>
-            <LialibilityTypesTab />
+            <LiabilityTypesTab />
           </TabPanel>
           <TabPanel mb={16}>
             <RecipientListTab />

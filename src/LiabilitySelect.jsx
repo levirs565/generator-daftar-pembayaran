@@ -1,6 +1,6 @@
 import { Select } from "@chakra-ui/react";
 
-export function LialibilitySelect({ value, onValueChange, typeList }) {
+export function LiabilitySelect({ value, onValueChange, typeList }) {
   return (
     <Select
       value={value}

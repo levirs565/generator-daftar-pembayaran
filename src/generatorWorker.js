@@ -3,12 +3,12 @@ import Docxtemplater from "docxtemplater";
 import expressionParser from "docxtemplater/expressions";
 import { formatCurrency, getItemById } from "./util";
 
-function processData({ recipientList, lialibilityTypeList }) {
+function processData({ recipientList, liabilityTypeList }) {
   return {
-    Daftar: recipientList.map(({ name, lialibilityList }) => ({
+    Daftar: recipientList.map(({ name, liabilityList }) => ({
       Nama: name,
-      Tanggungan: lialibilityList.map(({ id, amount }) => ({
-        Nama: getItemById(lialibilityTypeList, id).name,
+      Tanggungan: liabilityList.map(({ id, amount }) => ({
+        Nama: getItemById(liabilityTypeList, id).name,
         Nominal: formatCurrency(amount),
       })),
     })),

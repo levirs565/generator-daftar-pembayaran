@@ -54,7 +54,7 @@ function run(templateFile, data) {
 
 export function GenerateModal({
   recipientList,
-  lialibilityTypeList,
+  liabilityTypeList,
   isOpen,
   onClose,
 }) {
@@ -137,7 +137,7 @@ export function GenerateModal({
                 setIsProcessing(true);
                 run(file, {
                   recipientList,
-                  lialibilityTypeList,
+                  liabilityTypeList,
                 });
               }}
             >
