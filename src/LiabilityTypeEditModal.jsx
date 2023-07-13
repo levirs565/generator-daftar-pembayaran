@@ -51,7 +51,7 @@ function LiabilityTypeModalContent({ item, isNew, onSubmit, onClose }) {
         </FormControl>
       </ModalBody>
       <ModalFooter>
-        <Button variant="ghost" onClick={onClose}>
+        <Button variant="ghost" onClick={onClose} mr={4}>
           Batal
         </Button>
         <Button

@@ -44,7 +44,7 @@ function RecipientEditModalContent({ initialItem, onClose, onSubmit }) {
         </FormControl>
       </ModalBody>
       <ModalFooter>
-        <Button variant="ghost" onClick={onClose}>
+        <Button variant="ghost" onClick={onClose} mr={4}>
           Batal
         </Button>
         <Button
