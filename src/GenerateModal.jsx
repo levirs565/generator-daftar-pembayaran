@@ -44,20 +44,14 @@ function getWorker() {
   return activeWorker;
 }
 
-function run(templateFile, data) {
+function run(templateFile) {
   getWorker().postMessage({
     action: "generate",
     templateFile,
-    data,
   });
 }
 
-export function GenerateModal({
-  recipientList,
-  liabilityTypeList,
-  isOpen,
-  onClose,
-}) {
+export function GenerateModal({ isOpen, onClose }) {
   const [file, setFile] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultLink, setResultLink] = useState(null);
@@ -135,10 +129,7 @@ export function GenerateModal({
               colorScheme="pink"
               onClick={() => {
                 setIsProcessing(true);
-                run(file, {
-                  recipientList,
-                  liabilityTypeList,
-                });
+                run(file);
               }}
             >
               Hasilkan Dokumen

@@ -1,17 +1,29 @@
 import PizZip from "pizzip";
 import Docxtemplater from "docxtemplater";
 import expressionParser from "docxtemplater/expressions";
-import { formatCurrency, getItemById } from "./util";
+import { formatCurrency } from "./util";
+import { liabilityStore, recipientStore } from "./db";
 
-function processData({ recipientList, liabilityTypeList }) {
+async function mapRecipientLiability({ id, amount }) {
   return {
-    Daftar: recipientList.map(({ name, liabilityList }) => ({
-      Nama: name,
-      Tanggungan: liabilityList.map(({ id, amount }) => ({
-        Nama: getItemById(liabilityTypeList, id).name,
-        Nominal: formatCurrency(amount),
-      })),
-    })),
+    Nama: (await liabilityStore.get(id)).name,
+    Nominal: formatCurrency(amount),
+  };
+}
+
+async function mapRecipient({ name, liabilityList }) {
+  const total = liabilityList.reduce((result, item) => result + item.amount, 0);
+  return {
+    Nama: name,
+    Tanggungan: await Promise.all(liabilityList.map(mapRecipientLiability)),
+    Total: formatCurrency(total),
+  };
+}
+
+async function getData() {
+  const recipientList = await recipientStore.getAll();
+  return {
+    Daftar: await Promise.all(recipientList.map(mapRecipient)),
   };
 }
 
@@ -33,9 +45,9 @@ async function processTemplate(templateBuffer, data) {
   });
 }
 
-async function generateDocument(templateFile, data) {
+async function generateDocument(templateFile) {
   const templateBuffer = await templateFile.arrayBuffer();
-  const processedData = processData(data);
+  const processedData = await getData();
   return processTemplate(templateBuffer, processedData);
 }
 
