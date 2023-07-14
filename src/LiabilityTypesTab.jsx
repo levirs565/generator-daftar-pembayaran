@@ -1,5 +1,4 @@
 import {
-  Button,
   VStack,
   Flex,
   Card,
@@ -18,7 +17,7 @@ import {
   TabPanel,
 } from "@chakra-ui/react";
 import { formatCurrency } from "./util";
-import { Icon } from "@chakra-ui/icons";
+import { AddIcon, Icon } from "@chakra-ui/icons";
 import { RiMore2Fill } from "react-icons/ri";
 import { LiabilityTypeModal } from "./LiabilityTypeEditModal";
 import { RiPencilFill } from "react-icons/ri";
@@ -27,6 +26,7 @@ import { useState } from "react";
 import { liabilityStore } from "./db";
 import { useLiveQuery } from "dexie-react-hooks";
 import { catchWithToast } from "./toastUtil";
+import { FloatingActionButton } from "./Fab";
 
 function LiabilityTypeItem({ liability, index, onEdit, onDelete }) {
   return (
@@ -73,7 +73,7 @@ function LiabilityTypeItem({ liability, index, onEdit, onDelete }) {
 
 function LiabilityTypeList({ list, onEdit, onDelete }) {
   return (
-    <>
+    <VStack alignItems="stretch" gap={2}>
       {list.map((item, index) => (
         <LiabilityTypeItem
           key={item.id}
@@ -83,17 +83,17 @@ function LiabilityTypeList({ list, onEdit, onDelete }) {
           onDelete={onDelete}
         />
       ))}
-    </>
+    </VStack>
   );
 }
 
 function LiabilityTypeAdder({ onAdd }) {
   return (
-    <Flex alignSelf="end">
-      <Button colorScheme="pink" onClick={onAdd} width={"100%"}>
-        Tambah Jenis
-      </Button>
-    </Flex>
+    <FloatingActionButton
+      aria-label="Tambah Jenis"
+      onClick={onAdd}
+      icon={<AddIcon />}
+    />
   );
 }
 
@@ -115,51 +115,49 @@ export function LiabilityTypesTab() {
 
   return (
     <TabPanel>
-      <VStack alignItems="stretch" gap={2}>
-        {list && (
-          <LiabilityTypeList
-            list={list}
-            onEdit={(item) => {
-              setModalItem(item);
-              onModalOpen();
-            }}
-            onDelete={(item) => {
-              catchWithToast(
-                toast,
-                "Gagal Menghapus Jenis Tanggungan",
-                liabilityStore.delete(item)
-              );
-            }}
-          />
-        )}
-        <LiabilityTypeAdder
-          onAdd={() => {
-            setModalItem(null);
+      {list && (
+        <LiabilityTypeList
+          list={list}
+          onEdit={(item) => {
+            setModalItem(item);
             onModalOpen();
           }}
-        />
-        <LiabilityTypeModal
-          isOpen={isModalOpen}
-          onClose={onModalClose}
-          liability={modalItem}
-          onSubmit={(item) => {
-            if (!item.id) {
-              catchWithToast(
-                toast,
-                "Gagal Menambahkan Jenis Tanggungan",
-                liabilityStore.add(item)
-              );
-            } else {
-              catchWithToast(
-                toast,
-                "Gagal Mengubah Jenis Tanggungan",
-                liabilityStore.put(item)
-              );
-            }
-            setModalItem(null);
+          onDelete={(item) => {
+            catchWithToast(
+              toast,
+              "Gagal Menghapus Jenis Tanggungan",
+              liabilityStore.delete(item)
+            );
           }}
         />
-      </VStack>
+      )}
+      <LiabilityTypeAdder
+        onAdd={() => {
+          setModalItem(null);
+          onModalOpen();
+        }}
+      />
+      <LiabilityTypeModal
+        isOpen={isModalOpen}
+        onClose={onModalClose}
+        liability={modalItem}
+        onSubmit={(item) => {
+          if (!item.id) {
+            catchWithToast(
+              toast,
+              "Gagal Menambahkan Jenis Tanggungan",
+              liabilityStore.add(item)
+            );
+          } else {
+            catchWithToast(
+              toast,
+              "Gagal Mengubah Jenis Tanggungan",
+              liabilityStore.put(item)
+            );
+          }
+          setModalItem(null);
+        }}
+      />
     </TabPanel>
   );
 }

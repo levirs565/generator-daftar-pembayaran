@@ -27,6 +27,7 @@ import { useState } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
 import { recipientStore } from "./db";
 import { catchWithToast } from "./toastUtil";
+import { FloatingActionButton } from "./Fab";
 
 function RecipientItem({ item, index, onEdit, onDelete }) {
   return (
@@ -99,16 +100,10 @@ function RecipientList({ list, onEdit, onDelete }) {
 
 function RecipientAdder({ onAdd }) {
   return (
-    <IconButton
+    <FloatingActionButton
       aria-label="Tambah Penerima"
-      colorScheme="orange"
       onClick={onAdd}
       icon={<AddIcon />}
-      isRound
-      position={"fixed"}
-      right={4}
-      bottom={4}
-      size="lg"
     />
   );
 }
