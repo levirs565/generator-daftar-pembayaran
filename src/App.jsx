@@ -28,6 +28,8 @@ import { createRef, useEffect, useState } from "react";
 import { catchRethrow, downloadBlob } from "./util";
 import { catchWithToast } from "./toastUtil";
 
+const dataFileExtenstion = "daftar-pembayaran";
+
 function AppBar({
   headerHeight,
   onGenereteItemClick,
@@ -71,6 +73,7 @@ function AppBar({
               type="file"
               ref={importFileInputRef}
               onChange={(e) => onImportDataClick(e.target.files[0])}
+              accept={`.${dataFileExtenstion}`}
             />
             <MenuItem
               onClick={() =>
@@ -153,7 +156,10 @@ async function exportData() {
   const blob = new Blob([JSON.stringify(data)], {
     type: "application/json",
   });
-  downloadBlob(blob, `Data Daftar Pembayaran ${Date.now()}.json`);
+  downloadBlob(
+    blob,
+    `Data Daftar Pembayaran ${Date.now()}.${dataFileExtenstion}`
+  );
 }
 
 function App() {
