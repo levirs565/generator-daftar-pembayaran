@@ -26,6 +26,7 @@ import { useLiveQuery } from "dexie-react-hooks";
 import { catchWithToast } from "./toastUtil";
 import { FloatingActionButton } from "./Fab";
 import NiceModal from "@ebay/nice-modal-react";
+import { PromptDialog } from "./PromptDialog";
 
 function LiabilityTypeItem({ liability, index, onEdit, onDelete }) {
   return (
@@ -124,7 +125,13 @@ export function LiabilityTypesTab() {
             catchWithToast(
               toast,
               "Gagal Menghapus Jenis Tanggungan",
-              liabilityStore.delete(item)
+              NiceModal.show(PromptDialog, {
+                title: "Hapus Jenis Tanggungan",
+                message: `Apakah anda yakin menghapus jenis tanggungan "${item.name}"? Semua tanggungan yang berjenis ini akan ikut dihapus.`,
+                ctaColor: "red",
+                ctaText: "Hapus",
+              }).then(() => liabilityStore.delete(item))
+              // TODO: Ikus hapus tanggungan
             );
           }}
         />
@@ -134,8 +141,8 @@ export function LiabilityTypesTab() {
           catchWithToast(
             toast,
             "Gagal Menambahkan Jenis Tanggungan",
-            NiceModal.show(LiabilityTypeEditModal, { item: null }).then((result) =>
-              liabilityStore.add(result.item)
+            NiceModal.show(LiabilityTypeEditModal, { item: null }).then(
+              (result) => liabilityStore.add(result.item)
             )
           );
         }}

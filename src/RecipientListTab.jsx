@@ -27,6 +27,7 @@ import { recipientStore } from "./db";
 import { catchWithToast } from "./toastUtil";
 import { FloatingActionButton } from "./Fab";
 import NiceModal from "@ebay/nice-modal-react";
+import { PromptDialog } from "./PromptDialog";
 
 function RecipientItem({ item, index, onEdit, onDelete }) {
   return (
@@ -135,7 +136,12 @@ export function RecipientListTab() {
             catchWithToast(
               toast,
               "Gagal Menghapus Penerima",
-              recipientStore.delete(item)
+              NiceModal.show(PromptDialog, {
+                title: "Hapus Penerima",
+                message: `Apakah anda yakin menghapus penerima "${item.name}"?`,
+                ctaColor: "red",
+                ctaText: "Hapus",
+              }).then(() => recipientStore.delete(item))
             );
           }}
         />

@@ -8,12 +8,14 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { useState } from "react";
-import { getItemById, removeItemById } from "./util";
+import { CancelException, getItemById, removeItemById } from "./util";
 import { LiabilitySelect } from "./LiabilitySelect";
 import { AppCurrencyInput } from "./AppCurrencyInput";
 import { useLiveQuery } from "dexie-react-hooks";
 import { liabilityStore } from "./db";
 import { catchWithToast } from "./toastUtil";
+import NiceModal from "@ebay/nice-modal-react";
+import { PromptDialog } from "./PromptDialog";
 
 function NestedCard({ children }) {
   return (
@@ -107,9 +109,21 @@ export function RecipientLiabilityListEditor({ list, onUpdateList }) {
             })
           }
           onRemove={() =>
-            onUpdateList((draft) => {
-              removeItemById(draft, item.id);
+            NiceModal.show(PromptDialog, {
+              title: "Hapus Tanggungan",
+              message: `Apakah anda yakin menghapus tanggunan ${item.name}?`,
+              ctaColor: "red",
+              ctaText: "Hapus",
             })
+              .then(() => {
+                onUpdateList((draft) => {
+                  removeItemById(draft, item.id);
+                });
+              })
+              .catch((e) => {
+                if (e instanceof CancelException) return;
+                throw e;
+              })
           }
         />
       ))}
