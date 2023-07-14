@@ -1,7 +1,7 @@
 import PizZip from "pizzip";
 import Docxtemplater from "docxtemplater";
 import expressionParser from "docxtemplater/expressions";
-import { formatCurrency } from "./util";
+import { formatCurrency, getLiabilityTotal } from "./util";
 import { liabilityStore, recipientStore } from "./db";
 
 async function mapRecipientLiability({ id, amount }) {
@@ -12,11 +12,10 @@ async function mapRecipientLiability({ id, amount }) {
 }
 
 async function mapRecipient({ name, liabilityList }) {
-  const total = liabilityList.reduce((result, item) => result + item.amount, 0);
   return {
     Nama: name,
     Tanggungan: await Promise.all(liabilityList.map(mapRecipientLiability)),
-    Total: formatCurrency(total),
+    Total: formatCurrency(getLiabilityTotal(liabilityList)),
   };
 }
 

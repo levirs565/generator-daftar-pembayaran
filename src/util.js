@@ -17,6 +17,10 @@ export function getItemIndexById(array, id) {
   return array.findIndex((item) => item.id === id);
 }
 
+export function getLiabilityTotal(list) {
+  return list.reduce((result, item) => result + item.amount, 0);
+}
+
 const numberFormat = new Intl.NumberFormat("id-ID", {
   style: "currency",
   currency: "IDR",

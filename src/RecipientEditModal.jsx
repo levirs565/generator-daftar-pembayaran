@@ -15,7 +15,7 @@ import {
 import { RecipientLiabilityListEditor } from "./RecipientLiabilityListEditor";
 import { useState } from "react";
 import { useImmer } from "use-immer";
-import { formatCurrency } from "./util";
+import { formatCurrency, getLiabilityTotal } from "./util";
 
 function RecipientEditModalContent({ initialItem, onClose, onSubmit }) {
   const [name, setName] = useState(initialItem ? initialItem.name : "");
@@ -47,13 +47,7 @@ function RecipientEditModalContent({ initialItem, onClose, onSubmit }) {
       </ModalBody>
       <ModalFooter flexWrap="wrap">
         <Text w="100%" mb={1}>
-          Total Tanggungan:
-          {formatCurrency(
-            liabilityList.reduce(
-              (result, current) => result + current.amount,
-              0
-            )
-          )}
+          Total Tanggungan: {formatCurrency(getLiabilityTotal(liabilityList))}
         </Text>
         <Button variant="ghost" onClick={onClose} mr={4}>
           Batal

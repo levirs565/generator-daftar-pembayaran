@@ -18,7 +18,7 @@ import {
   useToast,
   TabPanel,
 } from "@chakra-ui/react";
-import { formatCurrency } from "./util";
+import { formatCurrency, getLiabilityTotal } from "./util";
 import { RiPencilFill } from "react-icons/ri";
 import { RiDeleteBinFill } from "react-icons/ri";
 import { RiMore2Fill } from "react-icons/ri";
@@ -41,12 +41,7 @@ function RecipientItem({ item, index, onEdit, onDelete }) {
               {item.name}
             </Heading>
             <Text fontSize="md">
-              {formatCurrency(
-                item.liabilityList.reduce(
-                  (result, current) => result + current.amount,
-                  0
-                )
-              )}
+              {formatCurrency(getLiabilityTotal(item.liabilityList))}
             </Text>
           </Box>
           <Menu isLazy autoSelect={false}>
