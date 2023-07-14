@@ -12,7 +12,7 @@ import {
   ModalOverlay,
   Textarea,
 } from "@chakra-ui/react";
-import { FastCurrencyInput } from "./FastInput";
+import { AppCurrencyInput } from "./AppCurrencyInput";
 import { useState } from "react";
 
 function LiabilityTypeModalContent({ item, isNew, onSubmit, onClose }) {
@@ -44,9 +44,9 @@ function LiabilityTypeModalContent({ item, isNew, onSubmit, onClose }) {
         </FormControl>
         <FormControl>
           <FormLabel>Nominal</FormLabel>
-          <FastCurrencyInput
+          <AppCurrencyInput
             value={amount}
-            onUpdate={(e) => setAmount(parseInt(e))}
+            onValueChange={(e) => setAmount(e ? parseInt(e) : 0)}
           />
         </FormControl>
       </ModalBody>
@@ -73,12 +73,7 @@ function LiabilityTypeModalContent({ item, isNew, onSubmit, onClose }) {
   );
 }
 
-export function LiabilityTypeModal({
-  liability,
-  isOpen,
-  onClose,
-  onSubmit,
-}) {
+export function LiabilityTypeModal({ liability, isOpen, onClose, onSubmit }) {
   return (
     <Modal
       isOpen={isOpen}

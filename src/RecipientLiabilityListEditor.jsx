@@ -10,7 +10,7 @@ import {
 import { useState } from "react";
 import { getItemById, removeItemById } from "./util";
 import { LiabilitySelect } from "./LiabilitySelect";
-import { FastCurrencyInput } from "./FastInput";
+import { AppCurrencyInput } from "./AppCurrencyInput";
 import { useLiveQuery } from "dexie-react-hooks";
 import { liabilityStore } from "./db";
 import { catchWithToast } from "./toastUtil";
@@ -33,11 +33,11 @@ function RecipientLiabilityItemEditor({ liability, onUpdate, onRemove }) {
         </FormControl>
         <FormControl>
           <FormLabel>Nominal</FormLabel>
-          <FastCurrencyInput
+          <AppCurrencyInput
             value={liability.amount}
-            onUpdate={(e) =>
+            onValueChange={(e) =>
               onUpdate((draft) => {
-                draft.amount = parseInt(e);
+                draft.amount = e ? parseInt(e) : 0;
               })
             }
           />
