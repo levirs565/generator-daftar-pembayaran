@@ -86,3 +86,10 @@ export const recipientStore = new RecipientStore();
 export function openDb() {
   return db.open();
 }
+
+export async function getExportData() {
+  return {
+    liabilityType: await liabilityStore.getAll(),
+    recipient: await recipientStore.getAll(),
+  };
+}

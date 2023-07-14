@@ -15,16 +15,19 @@ import {
   useDisclosure,
   VStack,
   Text,
+  useToast,
 } from "@chakra-ui/react";
 import { RecipientListTab } from "./RecipientListTab";
 import { LiabilityTypesTab } from "./LiabilityTypesTab";
 import { GenerateModal } from "./GenerateModal";
 import { HamburgerIcon } from "@chakra-ui/icons";
 import { theme } from "./theme";
-import { openDb } from "./db";
+import { getExportData, openDb } from "./db";
 import { useEffect, useState } from "react";
+import { downloadBlob } from "./util";
+import { catchWithToast } from "./toastUtil";
 
-function AppBar({ headerHeight, onGenereteItemClick }) {
+function AppBar({ headerHeight, onGenereteItemClick, onExportDataClick }) {
   return (
     <Flex
       as="header"
@@ -56,6 +59,7 @@ function AppBar({ headerHeight, onGenereteItemClick }) {
         />
         <Portal>
           <MenuList zIndex={200}>
+            <MenuItem onClick={onExportDataClick}>Ekspor Data</MenuItem>
             <MenuItem onClick={() => onGenereteItemClick()}>
               Hasilkan Dokumen
             </MenuItem>
@@ -111,6 +115,14 @@ function AppDBError({ message }) {
   );
 }
 
+async function exportData() {
+  const data = await getExportData();
+  const blob = new Blob([JSON.stringify(data)], {
+    type: "application/json",
+  });
+  downloadBlob(blob, `Data Daftar Pembayaran ${Date.now()}.json`);
+}
+
 function App() {
   const {
     isOpen: isGenerateModalOpen,
@@ -120,6 +132,7 @@ function App() {
 
   const headerHeight = 14;
   const [dbState, setDbState] = useState({ type: "wait" });
+  const toast = useToast();
 
   useEffect(() => {
     openDb()
@@ -136,6 +149,11 @@ function App() {
       <AppBar
         headerHeight={headerHeight}
         onGenereteItemClick={onGenerateModalOpen}
+        onExportDataClick={() => {
+          if (dbState.type === "opened") {
+            catchWithToast(toast, "Gagal Mengekspor Data", exportData());
+          }
+        }}
       />
       {dbState.type === "opened" && (
         <AppMain

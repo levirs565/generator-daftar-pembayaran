@@ -30,3 +30,16 @@ const numberFormat = new Intl.NumberFormat("id-ID", {
 export function formatCurrency(amount) {
   return numberFormat.format(amount);
 }
+
+export function downloadBlob(blob, name) {
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = name;
+  link.addEventListener("click", () => {
+    setTimeout(() => {
+      URL.revokeObjectURL(url);
+    }, 1000);
+  });
+  link.click();
+}
