@@ -120,3 +120,10 @@ export function dbImportData(data) {
       .then(() => recipientStore.populateRaw(data.recipient));
   });
 }
+
+export function clearDb() {
+  return db.transaction("rw", [db.liabilityType, db.recipient], () => {
+    liabilityStore.clear();
+    recipientStore.clear();
+  });
+}

@@ -23,7 +23,7 @@ import { LiabilityTypesTab } from "./LiabilityTypesTab";
 import { GenerateModal } from "./GenerateModal";
 import { HamburgerIcon } from "@chakra-ui/icons";
 import { theme } from "./theme";
-import { dbImportData, getExportData, openDb } from "./db";
+import { clearDb, dbImportData, getExportData, openDb } from "./db";
 import { createRef, useEffect, useState } from "react";
 import { catchRethrow, downloadBlob } from "./util";
 import { catchWithToast } from "./toastUtil";
@@ -33,6 +33,7 @@ function AppBar({
   onGenereteItemClick,
   onExportDataClick,
   onImportDataClick,
+  onClearDataClick,
 }) {
   const importFileInputRef = createRef();
   return (
@@ -81,6 +82,7 @@ function AppBar({
               Impor Data
             </MenuItem>
             <MenuItem onClick={onExportDataClick}>Ekspor Data</MenuItem>
+            <MenuItem onClick={onClearDataClick}>Bersihkan Data</MenuItem>
             <MenuItem onClick={() => onGenereteItemClick()}>
               Hasilkan Dokumen
             </MenuItem>
@@ -188,6 +190,11 @@ function App() {
         onExportDataClick={() => {
           if (dbState.type === "opened") {
             catchWithToast(toast, "Gagal Mengekspor Data", exportData());
+          }
+        }}
+        onClearDataClick={() => {
+          if (dbState.type === "opened") {
+            catchWithToast(toast, "Gagal Membersihkan Data", clearDb());
           }
         }}
       />
