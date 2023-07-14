@@ -15,15 +15,17 @@ import {
 import { RecipientLiabilityListEditor } from "./RecipientLiabilityListEditor";
 import { useState } from "react";
 import { useImmer } from "use-immer";
-import { formatCurrency, getLiabilityTotal } from "./util";
+import { CancelException, formatCurrency, getLiabilityTotal } from "./util";
+import NiceModal, { useModal } from "@ebay/nice-modal-react";
 
-function RecipientEditModalContent({ initialItem, onClose, onSubmit }) {
+function RecipientEditModalContent({ initialItem, onCancel, onSubmit }) {
   const [name, setName] = useState(initialItem ? initialItem.name : "");
   const [liabilityList, updateLiabilityList] = useImmer(
     initialItem ? initialItem.liabilityList : []
   );
   const isNameInvalid = name.length === 0;
   const isNew = !initialItem;
+
   return (
     <ModalContent>
       <ModalHeader>{isNew ? "Buat Penerima" : "Ubah Penerima"}</ModalHeader>
@@ -49,14 +51,13 @@ function RecipientEditModalContent({ initialItem, onClose, onSubmit }) {
         <Text w="100%" mb={1}>
           Total Tanggungan: {formatCurrency(getLiabilityTotal(liabilityList))}
         </Text>
-        <Button variant="ghost" onClick={onClose} mr={4}>
+        <Button variant="ghost" onClick={onCancel} mr={4}>
           Batal
         </Button>
         <Button
           isDisabled={isNameInvalid}
           colorScheme="pink"
           onClick={() => {
-            onClose();
             onSubmit({
               ...initialItem,
               name,
@@ -71,20 +72,28 @@ function RecipientEditModalContent({ initialItem, onClose, onSubmit }) {
   );
 }
 
-export function RecipientEditModal({ item, isOpen, onClose, onSubmit }) {
+export const RecipientEditModal = NiceModal.create(({ item }) => {
+  const modal = useModal();
   return (
     <Modal
-      isOpen={isOpen}
-      onClose={onClose}
+      isOpen={modal.visible}
+      onClose={modal.hide}
+      onCloseComplete={modal.remove}
       scrollBehavior="inside"
       blockScrollOnMount={false}
     >
       <ModalOverlay />
       <RecipientEditModalContent
         initialItem={item}
-        onSubmit={onSubmit}
-        onClose={onClose}
+        onSubmit={(item) => {
+          modal.resolve({ item });
+          modal.hide();
+        }}
+        onCancel={() => {
+          modal.reject(new CancelException());
+          modal.hide();
+        }}
       />
     </Modal>
   );
-}
+});

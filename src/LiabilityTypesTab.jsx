@@ -8,7 +8,6 @@ import {
   Box,
   Circle,
   IconButton,
-  useDisclosure,
   Menu,
   MenuButton,
   MenuList,
@@ -19,14 +18,14 @@ import {
 import { formatCurrency } from "./util";
 import { AddIcon, Icon } from "@chakra-ui/icons";
 import { RiMore2Fill } from "react-icons/ri";
-import { LiabilityTypeModal } from "./LiabilityTypeEditModal";
+import { LiabilityTypeEditModal } from "./LiabilityTypeEditModal";
 import { RiPencilFill } from "react-icons/ri";
 import { RiDeleteBinFill } from "react-icons/ri";
-import { useState } from "react";
 import { liabilityStore } from "./db";
 import { useLiveQuery } from "dexie-react-hooks";
 import { catchWithToast } from "./toastUtil";
 import { FloatingActionButton } from "./Fab";
+import NiceModal from "@ebay/nice-modal-react";
 
 function LiabilityTypeItem({ liability, index, onEdit, onDelete }) {
   return (
@@ -98,12 +97,6 @@ function LiabilityTypeAdder({ onAdd }) {
 }
 
 export function LiabilityTypesTab() {
-  const {
-    isOpen: isModalOpen,
-    onClose: onModalClose,
-    onOpen: onModalOpen,
-  } = useDisclosure();
-  const [modalItem, setModalItem] = useState(null);
   const toast = useToast();
   const list = useLiveQuery(() =>
     catchWithToast(
@@ -119,8 +112,13 @@ export function LiabilityTypesTab() {
         <LiabilityTypeList
           list={list}
           onEdit={(item) => {
-            setModalItem(item);
-            onModalOpen();
+            catchWithToast(
+              toast,
+              "Gagal Mengubah Jenis Tanggungan",
+              NiceModal.show(LiabilityTypeEditModal, { item }).then((result) =>
+                liabilityStore.put(result.item)
+              )
+            );
           }}
           onDelete={(item) => {
             catchWithToast(
@@ -133,29 +131,13 @@ export function LiabilityTypesTab() {
       )}
       <LiabilityTypeAdder
         onAdd={() => {
-          setModalItem(null);
-          onModalOpen();
-        }}
-      />
-      <LiabilityTypeModal
-        isOpen={isModalOpen}
-        onClose={onModalClose}
-        liability={modalItem}
-        onSubmit={(item) => {
-          if (!item.id) {
-            catchWithToast(
-              toast,
-              "Gagal Menambahkan Jenis Tanggungan",
-              liabilityStore.add(item)
-            );
-          } else {
-            catchWithToast(
-              toast,
-              "Gagal Mengubah Jenis Tanggungan",
-              liabilityStore.put(item)
-            );
-          }
-          setModalItem(null);
+          catchWithToast(
+            toast,
+            "Gagal Menambahkan Jenis Tanggungan",
+            NiceModal.show(LiabilityTypeEditModal, { item: null }).then((result) =>
+              liabilityStore.add(result.item)
+            )
+          );
         }}
       />
     </TabPanel>

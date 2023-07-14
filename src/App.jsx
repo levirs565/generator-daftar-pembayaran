@@ -12,7 +12,6 @@ import {
   MenuList,
   MenuItem,
   Portal,
-  useDisclosure,
   VStack,
   Text,
   useToast,
@@ -27,6 +26,7 @@ import { clearDb, dbImportData, getExportData, openDb } from "./db";
 import { createRef, useEffect, useState } from "react";
 import { catchRethrow, downloadBlob } from "./util";
 import { catchWithToast } from "./toastUtil";
+import NiceModal from "@ebay/nice-modal-react";
 
 const dataFileExtenstion = "daftar-pembayaran";
 
@@ -99,7 +99,7 @@ function AppBar({
   );
 }
 
-function AppMain({ headerHeight, isGenerateModalOpen, onGenerateModalClose }) {
+function AppMain({ headerHeight }) {
   return (
     <>
       <Tabs colorScheme="pink" variant="soft-rounded">
@@ -120,10 +120,6 @@ function AppMain({ headerHeight, isGenerateModalOpen, onGenerateModalClose }) {
           <RecipientListTab />
         </TabPanels>
       </Tabs>
-      <GenerateModal
-        isOpen={isGenerateModalOpen}
-        onClose={onGenerateModalClose}
-      />
     </>
   );
 }
@@ -163,12 +159,6 @@ async function exportData() {
 }
 
 function App() {
-  const {
-    isOpen: isGenerateModalOpen,
-    onOpen: onGenerateModalOpen,
-    onClose: onGenerateModalClose,
-  } = useDisclosure();
-
   const headerHeight = 14;
   const [dbState, setDbState] = useState({ type: "wait" });
   const toast = useToast();
@@ -185,33 +175,31 @@ function App() {
 
   return (
     <ChakraProvider theme={theme}>
-      <AppBar
-        headerHeight={headerHeight}
-        onGenereteItemClick={onGenerateModalOpen}
-        onImportDataClick={(file) => {
-          if (dbState.type === "opened" && file) {
-            catchWithToast(toast, "Gagal Mengimpor Data", importData(file));
-          }
-        }}
-        onExportDataClick={() => {
-          if (dbState.type === "opened") {
-            catchWithToast(toast, "Gagal Mengekspor Data", exportData());
-          }
-        }}
-        onClearDataClick={() => {
-          if (dbState.type === "opened") {
-            catchWithToast(toast, "Gagal Membersihkan Data", clearDb());
-          }
-        }}
-      />
-      {dbState.type === "opened" && (
-        <AppMain
+      <NiceModal.Provider>
+        <AppBar
           headerHeight={headerHeight}
-          isGenerateModalOpen={isGenerateModalOpen}
-          onGenerateModalClose={onGenerateModalClose}
+          onGenereteItemClick={() => {
+            if (dbState.type === "opened") NiceModal.show(GenerateModal);
+          }}
+          onImportDataClick={(file) => {
+            if (dbState.type === "opened" && file) {
+              catchWithToast(toast, "Gagal Mengimpor Data", importData(file));
+            }
+          }}
+          onExportDataClick={() => {
+            if (dbState.type === "opened") {
+              catchWithToast(toast, "Gagal Mengekspor Data", exportData());
+            }
+          }}
+          onClearDataClick={() => {
+            if (dbState.type === "opened") {
+              catchWithToast(toast, "Gagal Membersihkan Data", clearDb());
+            }
+          }}
         />
-      )}
-      {dbState.type === "error" && <AppDBError message={dbState.message} />}
+        {dbState.type === "opened" && <AppMain headerHeight={headerHeight} />}
+        {dbState.type === "error" && <AppDBError message={dbState.message} />}
+      </NiceModal.Provider>
     </ChakraProvider>
   );
 }

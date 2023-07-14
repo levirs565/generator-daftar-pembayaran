@@ -54,3 +54,9 @@ export function catchRethrow(fn, type, message) {
     throw e;
   }
 }
+
+export class CancelException extends Error {
+  constructor() {
+    super();
+  }
+}

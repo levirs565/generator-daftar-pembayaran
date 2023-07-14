@@ -14,7 +14,6 @@ import {
   MenuList,
   MenuItem,
   CardBody,
-  useDisclosure,
   useToast,
   TabPanel,
 } from "@chakra-ui/react";
@@ -23,11 +22,11 @@ import { RiPencilFill } from "react-icons/ri";
 import { RiDeleteBinFill } from "react-icons/ri";
 import { RiMore2Fill } from "react-icons/ri";
 import { RecipientEditModal } from "./RecipientEditModal";
-import { useState } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
 import { recipientStore } from "./db";
 import { catchWithToast } from "./toastUtil";
 import { FloatingActionButton } from "./Fab";
+import NiceModal from "@ebay/nice-modal-react";
 
 function RecipientItem({ item, index, onEdit, onDelete }) {
   return (
@@ -109,12 +108,6 @@ function RecipientAdder({ onAdd }) {
 }
 
 export function RecipientListTab() {
-  const {
-    isOpen: isModalOpen,
-    onClose: onModalClose,
-    onOpen: onModalOpen,
-  } = useDisclosure();
-  const [modalItem, setModalItem] = useState(null);
   const toast = useToast();
   const list = useLiveQuery(() =>
     catchWithToast(
@@ -130,8 +123,13 @@ export function RecipientListTab() {
         <RecipientList
           list={list}
           onEdit={(item) => {
-            setModalItem(item);
-            onModalOpen();
+            catchWithToast(
+              toast,
+              "Gagal Mengubah Penerima",
+              NiceModal.show(RecipientEditModal, { item }).then((result) =>
+                recipientStore.put(result.item)
+              )
+            );
           }}
           onDelete={(item) => {
             catchWithToast(
@@ -144,30 +142,14 @@ export function RecipientListTab() {
       )}
       <RecipientAdder
         onAdd={() => {
-          setModalItem(null);
-          onModalOpen();
+          catchWithToast(
+            toast,
+            "Gagal Menambahkan Penerima",
+            NiceModal.show(RecipientEditModal, { item: null }).then((result) =>
+              recipientStore.add(result.item)
+            )
+          );
         }}
-      />
-      <RecipientEditModal
-        item={modalItem}
-        onSubmit={(item) => {
-          if (item.id) {
-            catchWithToast(
-              toast,
-              "Gagal Mengubah Penerima",
-              recipientStore.put(item)
-            );
-          } else {
-            catchWithToast(
-              toast,
-              "Gagal Menambahkan Penerima",
-              recipientStore.add(item)
-            );
-          }
-          setModalItem(null);
-        }}
-        isOpen={isModalOpen}
-        onClose={onModalClose}
       />
     </TabPanel>
   );

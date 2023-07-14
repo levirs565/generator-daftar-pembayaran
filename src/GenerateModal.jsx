@@ -18,6 +18,7 @@ import {
 } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import { downloadBlob } from "./util";
+import NiceModal, { useModal } from "@ebay/nice-modal-react";
 
 const workerResultEvent = "generateWorkerResult";
 
@@ -51,7 +52,8 @@ function run(templateFile) {
   });
 }
 
-export function GenerateModal({ isOpen, onClose }) {
+export const GenerateModal = NiceModal.create(() => {
+  const modal = useModal();
   const [file, setFile] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const fileInput = useRef();
@@ -64,7 +66,7 @@ export function GenerateModal({ isOpen, onClose }) {
       if (detail.success) {
         const name = `Daftar Pembayaran ${Date.now()}.docx`;
         downloadBlob(detail.blob, name);
-        onClose();
+        modal.hide();
       } else {
         toast({
           title: "Error Saat Menghasilkan Dokumen",
@@ -81,7 +83,12 @@ export function GenerateModal({ isOpen, onClose }) {
   }, []);
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} scrollBehavior="inside">
+    <Modal
+      isOpen={modal.visible}
+      onClose={modal.hide}
+      onCloseComplete={modal.remove}
+      scrollBehavior="inside"
+    >
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>Hasilkan Dokumen</ModalHeader>
@@ -135,4 +142,4 @@ export function GenerateModal({ isOpen, onClose }) {
       </ModalContent>
     </Modal>
   );
-}
+});
