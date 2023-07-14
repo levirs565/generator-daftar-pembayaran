@@ -27,6 +27,7 @@ import { createRef, useEffect, useState } from "react";
 import { catchRethrow, downloadBlob } from "./util";
 import { GlobalToastContext, catchWithToast } from "./toastUtil";
 import NiceModal from "@ebay/nice-modal-react";
+import { PromptDialog } from "./PromptDialog";
 
 const dataFileExtenstion = "daftar-pembayaran";
 
@@ -184,7 +185,16 @@ function App() {
             }}
             onImportDataClick={(file) => {
               if (dbState.type === "opened" && file) {
-                catchWithToast(toast, "Gagal Mengimpor Data", importData(file));
+                catchWithToast(
+                  toast,
+                  "Gagal Mengimpor Data",
+                  NiceModal.show(PromptDialog, {
+                    title: "Impor Data",
+                    message: "Data saat ini akan dihapus sebelum data diimpor",
+                    ctaColor: "red",
+                    ctaText: "Tetap Impor",
+                  }).then(() => importData(file))
+                );
               }
             }}
             onExportDataClick={() => {
@@ -194,7 +204,16 @@ function App() {
             }}
             onClearDataClick={() => {
               if (dbState.type === "opened") {
-                catchWithToast(toast, "Gagal Membersihkan Data", clearDb());
+                catchWithToast(
+                  toast,
+                  "Gagal Membersihkan Data",
+                  NiceModal.show(PromptDialog, {
+                    title: "Bersihkan Data",
+                    message: "Data akan hilang dan tidak bisa dikembalikan",
+                    ctaColor: "red",
+                    ctaText: "Tetap Bersihkan",
+                  }).then(() => clearDb())
+                );
               }
             }}
           />
