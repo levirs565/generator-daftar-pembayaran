@@ -9,6 +9,6 @@ export async function catchWithToast(toast, title, promise) {
       duration: 2000,
       isClosable: true,
     });
-    console.error();
+    console.error(error);
   }
 }
