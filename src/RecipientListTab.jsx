@@ -14,7 +14,6 @@ import {
   MenuList,
   MenuItem,
   CardBody,
-  useToast,
   TabPanel,
 } from "@chakra-ui/react";
 import { formatCurrency, getLiabilityTotal } from "./util";
@@ -24,7 +23,7 @@ import { RiMore2Fill } from "react-icons/ri";
 import { RecipientEditModal } from "./RecipientEditModal";
 import { useLiveQuery } from "dexie-react-hooks";
 import { recipientStore } from "./db";
-import { catchWithToast } from "./toastUtil";
+import { catchWithToast, useGlobalToast } from "./toastUtil";
 import { FloatingActionButton } from "./Fab";
 import NiceModal from "@ebay/nice-modal-react";
 import { PromptDialog } from "./PromptDialog";
@@ -109,7 +108,7 @@ function RecipientAdder({ onAdd }) {
 }
 
 export function RecipientListTab() {
-  const toast = useToast();
+  const toast = useGlobalToast();
   const list = useLiveQuery(() =>
     catchWithToast(
       toast,

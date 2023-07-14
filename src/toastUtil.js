@@ -1,3 +1,4 @@
+import { createContext, useContext } from "react";
 import { CancelException } from "./util";
 
 export async function catchWithToast(toast, title, promise) {
@@ -15,3 +16,6 @@ export async function catchWithToast(toast, title, promise) {
     console.error(error);
   }
 }
+
+export const GlobalToastContext = createContext();
+export const useGlobalToast = () => useContext(GlobalToastContext);

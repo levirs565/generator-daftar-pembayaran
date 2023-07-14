@@ -14,11 +14,11 @@ import {
   Text,
   VStack,
   VisuallyHiddenInput,
-  useToast,
 } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import { downloadBlob } from "./util";
 import NiceModal, { useModal } from "@ebay/nice-modal-react";
+import { useGlobalToast } from "./toastUtil";
 
 const workerResultEvent = "generateWorkerResult";
 
@@ -57,7 +57,7 @@ export const GenerateModal = NiceModal.create(() => {
   const [file, setFile] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const fileInput = useRef();
-  const toast = useToast();
+  const toast = useGlobalToast();
 
   useEffect(() => {
     const handleWorkerResult = (e) => {

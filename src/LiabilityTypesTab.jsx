@@ -12,7 +12,6 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
-  useToast,
   TabPanel,
 } from "@chakra-ui/react";
 import { formatCurrency } from "./util";
@@ -23,7 +22,7 @@ import { RiPencilFill } from "react-icons/ri";
 import { RiDeleteBinFill } from "react-icons/ri";
 import { liabilityStore } from "./db";
 import { useLiveQuery } from "dexie-react-hooks";
-import { catchWithToast } from "./toastUtil";
+import { catchWithToast, useGlobalToast } from "./toastUtil";
 import { FloatingActionButton } from "./Fab";
 import NiceModal from "@ebay/nice-modal-react";
 import { PromptDialog } from "./PromptDialog";
@@ -98,7 +97,7 @@ function LiabilityTypeAdder({ onAdd }) {
 }
 
 export function LiabilityTypesTab() {
-  const toast = useToast();
+  const toast = useGlobalToast();
   const list = useLiveQuery(() =>
     catchWithToast(
       toast,

@@ -25,7 +25,7 @@ import { theme } from "./theme";
 import { clearDb, dbImportData, getExportData, openDb } from "./db";
 import { createRef, useEffect, useState } from "react";
 import { catchRethrow, downloadBlob } from "./util";
-import { catchWithToast } from "./toastUtil";
+import { GlobalToastContext, catchWithToast } from "./toastUtil";
 import NiceModal from "@ebay/nice-modal-react";
 
 const dataFileExtenstion = "daftar-pembayaran";
@@ -176,29 +176,31 @@ function App() {
   return (
     <ChakraProvider theme={theme}>
       <NiceModal.Provider>
-        <AppBar
-          headerHeight={headerHeight}
-          onGenereteItemClick={() => {
-            if (dbState.type === "opened") NiceModal.show(GenerateModal);
-          }}
-          onImportDataClick={(file) => {
-            if (dbState.type === "opened" && file) {
-              catchWithToast(toast, "Gagal Mengimpor Data", importData(file));
-            }
-          }}
-          onExportDataClick={() => {
-            if (dbState.type === "opened") {
-              catchWithToast(toast, "Gagal Mengekspor Data", exportData());
-            }
-          }}
-          onClearDataClick={() => {
-            if (dbState.type === "opened") {
-              catchWithToast(toast, "Gagal Membersihkan Data", clearDb());
-            }
-          }}
-        />
-        {dbState.type === "opened" && <AppMain headerHeight={headerHeight} />}
-        {dbState.type === "error" && <AppDBError message={dbState.message} />}
+        <GlobalToastContext.Provider value={toast}>
+          <AppBar
+            headerHeight={headerHeight}
+            onGenereteItemClick={() => {
+              if (dbState.type === "opened") NiceModal.show(GenerateModal);
+            }}
+            onImportDataClick={(file) => {
+              if (dbState.type === "opened" && file) {
+                catchWithToast(toast, "Gagal Mengimpor Data", importData(file));
+              }
+            }}
+            onExportDataClick={() => {
+              if (dbState.type === "opened") {
+                catchWithToast(toast, "Gagal Mengekspor Data", exportData());
+              }
+            }}
+            onClearDataClick={() => {
+              if (dbState.type === "opened") {
+                catchWithToast(toast, "Gagal Membersihkan Data", clearDb());
+              }
+            }}
+          />
+          {dbState.type === "opened" && <AppMain headerHeight={headerHeight} />}
+          {dbState.type === "error" && <AppDBError message={dbState.message} />}
+        </GlobalToastContext.Provider>
       </NiceModal.Provider>
     </ChakraProvider>
   );

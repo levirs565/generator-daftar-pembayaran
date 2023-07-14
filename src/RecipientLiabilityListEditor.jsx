@@ -5,7 +5,6 @@ import {
   FormControl,
   FormLabel,
   Box,
-  useToast,
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { CancelException, getItemById, removeItemById } from "./util";
@@ -13,7 +12,7 @@ import { LiabilitySelect } from "./LiabilitySelect";
 import { AppCurrencyInput } from "./AppCurrencyInput";
 import { useLiveQuery } from "dexie-react-hooks";
 import { liabilityStore } from "./db";
-import { catchWithToast } from "./toastUtil";
+import { catchWithToast, useGlobalToast } from "./toastUtil";
 import NiceModal from "@ebay/nice-modal-react";
 import { PromptDialog } from "./PromptDialog";
 
@@ -87,7 +86,7 @@ function RecipientLiabilityAdder({ typeList, onAdd }) {
 }
 
 export function RecipientLiabilityListEditor({ list, onUpdateList }) {
-  const toast = useToast();
+  const toast = useGlobalToast();
   const unusedLiabilityTypeList = useLiveQuery(
     () =>
       catchWithToast(
