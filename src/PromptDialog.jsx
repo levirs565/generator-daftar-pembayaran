@@ -12,16 +12,18 @@ import { useRef } from "react";
 import { CancelException } from "./util";
 
 export const PromptDialog = NiceModal.create(
-  ({ title, message, ctaColor, ctaText }) => {
+  ({ title, message, ctaColor, ctaText, cancelText = "Batal" }) => {
     const modal = useModal();
     const cancelButtonRef = useRef();
     return (
       <AlertDialog isOpen={modal.visible} onCloseComplete={modal.remove}>
         <AlertDialogOverlay />
         <AlertDialogContent>
-          <AlertDialogHeader fontSize="lg" fontWeight="bold">
-            {title}
-          </AlertDialogHeader>
+          {title && (
+            <AlertDialogHeader fontSize="lg" fontWeight="bold">
+              {title}
+            </AlertDialogHeader>
+          )}
           <AlertDialogBody>{message}</AlertDialogBody>
           <AlertDialogFooter>
             <Button
@@ -33,7 +35,7 @@ export const PromptDialog = NiceModal.create(
               }}
               mr={4}
             >
-              Batal
+              {cancelText}
             </Button>
             <Button
               colorScheme={ctaColor}
@@ -50,3 +52,22 @@ export const PromptDialog = NiceModal.create(
     );
   }
 );
+
+function showCancelCofirmation() {
+  return NiceModal.show(PromptDialog, {
+    title: "Buang perubahan?",
+    message: "Perubahan yang telah dibuat akan hilang",
+    ctaColor: "red",
+    ctaText: "Buang",
+    cancelText: "Tetap Mengubah",
+  });
+}
+
+export function cancelModalWithConfirm(modal) {
+  return showCancelCofirmation()
+    .then(() => {
+      modal.reject(new CancelException());
+      modal.hide();
+    })
+    .catch(() => {});
+}

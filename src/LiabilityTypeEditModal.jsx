@@ -15,7 +15,7 @@ import {
 import { AppCurrencyInput } from "./AppCurrencyInput";
 import { useState } from "react";
 import NiceModal, { useModal } from "@ebay/nice-modal-react";
-import { CancelException } from "./util";
+import { cancelModalWithConfirm } from "./PromptDialog";
 
 function LiabilityTypeModalContent({ initialItem, onSubmit, onCancel }) {
   const [name, setName] = useState(initialItem ? initialItem.name : "");
@@ -76,10 +76,12 @@ function LiabilityTypeModalContent({ initialItem, onSubmit, onCancel }) {
 
 export const LiabilityTypeEditModal = NiceModal.create(({ item }) => {
   const modal = useModal();
+  const onClose = () => cancelModalWithConfirm(modal);
+
   return (
     <Modal
       isOpen={modal.visible}
-      onClose={modal.hide}
+      onClose={onClose}
       onCloseComplete={modal.remove}
       scrollBehavior="inside"
       blockScrollOnMount={false}
@@ -91,10 +93,7 @@ export const LiabilityTypeEditModal = NiceModal.create(({ item }) => {
           modal.resolve({ item });
           modal.hide();
         }}
-        onCancel={() => {
-          modal.reject(new CancelException());
-          modal.hide();
-        }}
+        onCancel={onClose}
       />
     </Modal>
   );

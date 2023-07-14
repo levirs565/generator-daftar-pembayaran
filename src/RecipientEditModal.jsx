@@ -6,6 +6,7 @@ import {
   Input,
   Modal,
   ModalBody,
+  ModalCloseButton,
   ModalContent,
   ModalFooter,
   ModalHeader,
@@ -15,8 +16,9 @@ import {
 import { RecipientLiabilityListEditor } from "./RecipientLiabilityListEditor";
 import { useState } from "react";
 import { useImmer } from "use-immer";
-import { CancelException, formatCurrency, getLiabilityTotal } from "./util";
+import { formatCurrency, getLiabilityTotal } from "./util";
 import NiceModal, { useModal } from "@ebay/nice-modal-react";
+import { cancelModalWithConfirm } from "./PromptDialog";
 
 function RecipientEditModalContent({ initialItem, onCancel, onSubmit }) {
   const [name, setName] = useState(initialItem ? initialItem.name : "");
@@ -29,6 +31,7 @@ function RecipientEditModalContent({ initialItem, onCancel, onSubmit }) {
   return (
     <ModalContent>
       <ModalHeader>{isNew ? "Buat Penerima" : "Ubah Penerima"}</ModalHeader>
+      <ModalCloseButton />
       <ModalBody>
         <FormControl isInvalid={isNameInvalid} isRequired>
           <FormLabel>Nama</FormLabel>
@@ -74,10 +77,12 @@ function RecipientEditModalContent({ initialItem, onCancel, onSubmit }) {
 
 export const RecipientEditModal = NiceModal.create(({ item }) => {
   const modal = useModal();
+  const onClose = () => cancelModalWithConfirm(modal);
+
   return (
     <Modal
       isOpen={modal.visible}
-      onClose={modal.hide}
+      onClose={onClose}
       onCloseComplete={modal.remove}
       scrollBehavior="inside"
       blockScrollOnMount={false}
@@ -89,10 +94,7 @@ export const RecipientEditModal = NiceModal.create(({ item }) => {
           modal.resolve({ item });
           modal.hide();
         }}
-        onCancel={() => {
-          modal.reject(new CancelException());
-          modal.hide();
-        }}
+        onCancel={onClose}
       />
     </Modal>
   );
