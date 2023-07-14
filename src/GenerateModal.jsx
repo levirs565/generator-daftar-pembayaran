@@ -1,7 +1,6 @@
-import { DownloadIcon, ExternalLinkIcon } from "@chakra-ui/icons";
+import { ExternalLinkIcon } from "@chakra-ui/icons";
 import {
   Button,
-  Collapse,
   HStack,
   Input,
   Link,
@@ -9,15 +8,16 @@ import {
   ModalBody,
   ModalCloseButton,
   ModalContent,
+  ModalFooter,
   ModalHeader,
   ModalOverlay,
   Text,
   VStack,
   VisuallyHiddenInput,
-  useDisclosure,
   useToast,
 } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
+import { downloadBlob } from "./util";
 
 const workerResultEvent = "generateWorkerResult";
 
@@ -54,12 +54,6 @@ function run(templateFile) {
 export function GenerateModal({ isOpen, onClose }) {
   const [file, setFile] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [resultLink, setResultLink] = useState(null);
-  const {
-    isOpen: isFileShow,
-    onOpen: onFileShow,
-    onClose: onFileHide,
-  } = useDisclosure();
   const fileInput = useRef();
   const toast = useToast();
 
@@ -69,12 +63,8 @@ export function GenerateModal({ isOpen, onClose }) {
       const detail = e.detail;
       if (detail.success) {
         const name = `Daftar Pembayaran ${Date.now()}.docx`;
-        const href = URL.createObjectURL(detail.blob);
-        setResultLink({
-          name,
-          href,
-        });
-        onFileShow();
+        downloadBlob(detail.blob, name);
+        onClose();
       } else {
         toast({
           title: "Error Saat Menghasilkan Dokumen",
@@ -119,49 +109,29 @@ export function GenerateModal({ isOpen, onClose }) {
                 onChange={(e) => setFile(e.target.files[0])}
               />
             </HStack>
-            <Link isExternal>
+            <Link isExternal alignSelf="end">
               Unduh Contoh Template <ExternalLinkIcon mx={2} />
             </Link>
-            <Button
-              isDisabled={!file}
-              isLoading={isProcessing}
-              loadingText="Menghasilkan Dokumen"
-              colorScheme="pink"
-              onClick={() => {
-                setIsProcessing(true);
-                run(file);
-              }}
-            >
-              Hasilkan Dokumen
-            </Button>
-            <Collapse in={isFileShow} unmountOnExit>
-              <VStack>
-                <Text>
-                  Dokumen berikut adalah dokumen yang terakhir kali dihasilkan.
-                  Tombol di bawah akan hilang setelah file di unduh.
-                </Text>
-                <Button
-                  as={"a"}
-                  variant="outline"
-                  leftIcon={<DownloadIcon />}
-                  colorScheme="orange"
-                  download={resultLink ? resultLink.name : ""}
-                  href={resultLink ? resultLink.href : ""}
-                  onClick={() => {
-                    const href = resultLink.href;
-                    window.setTimeout(() => {
-                      onFileHide();
-                      URL.revokeObjectURL(href);
-                      setResultLink(null);
-                    }, 1000);
-                  }}
-                >
-                  Unduh Dokumen
-                </Button>
-              </VStack>
-            </Collapse>
+            <Text alignSelf="start">
+              Dokumen akan otomatis terunduh setelah dokumen berhasil
+              dihasilkan.
+            </Text>
           </VStack>
         </ModalBody>
+        <ModalFooter>
+          <Button
+            isDisabled={!file}
+            isLoading={isProcessing}
+            loadingText="Menghasilkan Dokumen"
+            colorScheme="pink"
+            onClick={() => {
+              setIsProcessing(true);
+              run(file);
+            }}
+          >
+            Hasilkan
+          </Button>
+        </ModalFooter>
       </ModalContent>
     </Modal>
   );
