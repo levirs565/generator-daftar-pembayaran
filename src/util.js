@@ -43,3 +43,14 @@ export function downloadBlob(blob, name) {
   });
   link.click();
 }
+
+export function catchRethrow(fn, type, message) {
+  try {
+    return fn();
+  } catch (e) {
+    if (e instanceof type) {
+      throw new SyntaxError(message);
+    }
+    throw e;
+  }
+}

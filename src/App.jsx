@@ -16,18 +16,25 @@ import {
   VStack,
   Text,
   useToast,
+  VisuallyHiddenInput,
 } from "@chakra-ui/react";
 import { RecipientListTab } from "./RecipientListTab";
 import { LiabilityTypesTab } from "./LiabilityTypesTab";
 import { GenerateModal } from "./GenerateModal";
 import { HamburgerIcon } from "@chakra-ui/icons";
 import { theme } from "./theme";
-import { getExportData, openDb } from "./db";
-import { useEffect, useState } from "react";
-import { downloadBlob } from "./util";
+import { dbImportData, getExportData, openDb } from "./db";
+import { createRef, useEffect, useState } from "react";
+import { catchRethrow, downloadBlob } from "./util";
 import { catchWithToast } from "./toastUtil";
 
-function AppBar({ headerHeight, onGenereteItemClick, onExportDataClick }) {
+function AppBar({
+  headerHeight,
+  onGenereteItemClick,
+  onExportDataClick,
+  onImportDataClick,
+}) {
+  const importFileInputRef = createRef();
   return (
     <Flex
       as="header"
@@ -59,6 +66,20 @@ function AppBar({ headerHeight, onGenereteItemClick, onExportDataClick }) {
         />
         <Portal>
           <MenuList zIndex={200}>
+            <VisuallyHiddenInput
+              type="file"
+              ref={importFileInputRef}
+              onChange={(e) => onImportDataClick(e.target.files[0])}
+            />
+            <MenuItem
+              onClick={() =>
+                "showPicker" in HTMLInputElement.prototype
+                  ? importFileInputRef.current.showPicker()
+                  : importFileInputRef.current.click()
+              }
+            >
+              Impor Data
+            </MenuItem>
             <MenuItem onClick={onExportDataClick}>Ekspor Data</MenuItem>
             <MenuItem onClick={() => onGenereteItemClick()}>
               Hasilkan Dokumen
@@ -115,6 +136,16 @@ function AppDBError({ message }) {
   );
 }
 
+async function importData(file) {
+  const text = await file.text();
+  const data = catchRethrow(
+    () => JSON.parse(text),
+    SyntaxError,
+    "Berkas tidak valid"
+  );
+  return dbImportData(data);
+}
+
 async function exportData() {
   const data = await getExportData();
   const blob = new Blob([JSON.stringify(data)], {
@@ -149,6 +180,11 @@ function App() {
       <AppBar
         headerHeight={headerHeight}
         onGenereteItemClick={onGenerateModalOpen}
+        onImportDataClick={(file) => {
+          if (dbState.type === "opened" && file) {
+            catchWithToast(toast, "Gagal Mengimpor Data", importData(file));
+          }
+        }}
         onExportDataClick={() => {
           if (dbState.type === "opened") {
             catchWithToast(toast, "Gagal Mengekspor Data", exportData());

@@ -31,6 +31,14 @@ class LiabilityStore {
   delete(item) {
     return db.liabilityType.delete(item.id);
   }
+
+  clear() {
+    return db.liabilityType.clear();
+  }
+
+  populateRaw(list) {
+    return db.liabilityType.bulkAdd(list);
+  }
 }
 
 class RecipientStore {
@@ -78,6 +86,14 @@ class RecipientStore {
   delete(item) {
     return db.recipient.delete(item.id);
   }
+
+  clear() {
+    return db.recipient.clear();
+  }
+
+  populateRaw(list) {
+    return db.recipient.bulkAdd(list);
+  }
 }
 
 export const liabilityStore = new LiabilityStore();
@@ -92,4 +108,15 @@ export async function getExportData() {
     liabilityType: await liabilityStore.getAll(),
     recipient: await recipientStore.getAll(),
   };
+}
+
+export function dbImportData(data) {
+  return db.transaction("rw", [db.liabilityType, db.recipient], () => {
+    liabilityStore
+      .clear()
+      .then(() => liabilityStore.populateRaw(data.liabilityType));
+    recipientStore
+      .clear()
+      .then(() => recipientStore.populateRaw(data.recipient));
+  });
 }
