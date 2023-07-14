@@ -10,10 +10,12 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  Text,
 } from "@chakra-ui/react";
 import { RecipientLiabilityListEditor } from "./RecipientLiabilityListEditor";
 import { useState } from "react";
 import { useImmer } from "use-immer";
+import { formatCurrency } from "./util";
 
 function RecipientEditModalContent({ initialItem, onClose, onSubmit }) {
   const [name, setName] = useState(initialItem ? initialItem.name : "");
@@ -43,7 +45,16 @@ function RecipientEditModalContent({ initialItem, onClose, onSubmit }) {
           />
         </FormControl>
       </ModalBody>
-      <ModalFooter>
+      <ModalFooter flexWrap="wrap">
+        <Text w="100%" mb={1}>
+          Total Tanggungan:
+          {formatCurrency(
+            liabilityList.reduce(
+              (result, current) => result + current.amount,
+              0
+            )
+          )}
+        </Text>
         <Button variant="ghost" onClick={onClose} mr={4}>
           Batal
         </Button>
