@@ -11,7 +11,7 @@ class AppStore {
 
     this.#db.version(1).stores({
       liabilityType: "++id,name",
-      liability: "++id,recipientId,typeId",
+      liability: "++id,[recipientId+typeId]",
       recipient: "++id,name",
     });
 
@@ -114,30 +114,25 @@ class AppStore {
       async () => {
         const recipientId = await this.#recipientTable.put({ id, name });
 
-        const lastLiabilityList = await this.#getRecipientLiabilityCollection(
-          recipientId
-        ).toArray();
-        const typeIdToId = new Map();
-        for (const { id, typeId } of lastLiabilityList)
-          typeIdToId.set(typeId, id);
+        const liabilityTypeIdList = liabilityList.map(({ typeId }) => typeId);
+        await this.#getRecipientLiabilityCollection(recipientId)
+          .filter((item) => !liabilityTypeIdList.includes(item.typeId))
+          .delete();
 
         await this.#liabilityTable.bulkPut(
-          liabilityList.map(({ id, typeId, amount }, index) => ({
-            id: id ? id : typeIdToId.get(typeId),
-            recipientId,
-            typeId,
-            amount,
-            index,
-          }))
-        );
-
-        const usedTypeId = new Set();
-        for (const { typeId } of liabilityList) usedTypeId.add(typeId);
-
-        await this.#liabilityTable.bulkDelete(
-          lastLiabilityList
-            .filter(({ typeId }) => !usedTypeId.has(typeId))
-            .map(({ id }) => id)
+          await Promise.all(
+            liabilityList.map(async ({ id, typeId, amount }, index) => ({
+              id:
+                id ??
+                (
+                  await this.#liabilityTable.get({ recipientId, typeId })
+                )?.id,
+              recipientId,
+              typeId,
+              amount,
+              index,
+            }))
+          )
         );
       }
     );
