@@ -39,6 +39,7 @@ function RecipientEditModalContent({ initialItem, onCancel, onSubmit }) {
             value={name}
             placeholder="Nama Penerima"
             onChange={(e) => setName(e.target.value)}
+            data-autofocus
           />
           <FormErrorMessage>Nama tidak boleh kosong.</FormErrorMessage>
         </FormControl>
