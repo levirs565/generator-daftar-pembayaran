@@ -73,7 +73,10 @@ function AppBar({
             <VisuallyHiddenInput
               type="file"
               ref={importFileInputRef}
-              onChange={(e) => onImportDataClick(e.target.files[0])}
+              onChange={(e) => {
+                onImportDataClick(e.target.files[0]);
+                e.target.value = null;
+              }}
               accept={`.${dataFileExtenstion}`}
             />
             <MenuItem
