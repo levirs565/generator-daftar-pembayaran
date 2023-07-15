@@ -85,7 +85,6 @@ export const RecipientEditModal = NiceModal.create(({ item }) => {
       onClose={onClose}
       onCloseComplete={modal.remove}
       scrollBehavior="inside"
-      blockScrollOnMount={false}
     >
       <ModalOverlay />
       <RecipientEditModalContent

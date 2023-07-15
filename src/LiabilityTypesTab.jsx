@@ -26,6 +26,8 @@ import { catchWithToast, useGlobalToast } from "./toastUtil";
 import { FloatingActionButton } from "./Fab";
 import NiceModal from "@ebay/nice-modal-react";
 import { PromptDialog } from "./PromptDialog";
+import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
+import { ListItemMotionProps } from "./animation";
 
 function LiabilityTypeItem({ liability, index, onEdit, onDelete }) {
   return (
@@ -73,15 +75,20 @@ function LiabilityTypeItem({ liability, index, onEdit, onDelete }) {
 function LiabilityTypeList({ list, onEdit, onDelete }) {
   return (
     <VStack alignItems="stretch" gap={2}>
-      {list.map((item, index) => (
-        <LiabilityTypeItem
-          key={item.id}
-          index={index}
-          liability={item}
-          onEdit={onEdit}
-          onDelete={onDelete}
-        />
-      ))}
+      <LayoutGroup>
+        <AnimatePresence>
+          {list.map((item, index) => (
+            <motion.div key={item.id} {...ListItemMotionProps}>
+              <LiabilityTypeItem
+                index={index}
+                liability={item}
+                onEdit={onEdit}
+                onDelete={onDelete}
+              />
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </LayoutGroup>
     </VStack>
   );
 }

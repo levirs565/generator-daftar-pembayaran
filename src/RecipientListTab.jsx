@@ -27,6 +27,8 @@ import { catchWithToast, useGlobalToast } from "./toastUtil";
 import { FloatingActionButton } from "./Fab";
 import NiceModal from "@ebay/nice-modal-react";
 import { PromptDialog } from "./PromptDialog";
+import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
+import { ListItemMotionProps } from "./animation";
 
 function RecipientItem({ item, index, onEdit, onDelete }) {
   return (
@@ -84,15 +86,20 @@ function RecipientItem({ item, index, onEdit, onDelete }) {
 function RecipientList({ list, onEdit, onDelete }) {
   return (
     <VStack alignItems="stretch">
-      {list.map((item, index) => (
-        <RecipientItem
-          key={item.id}
-          item={item}
-          index={index}
-          onEdit={onEdit}
-          onDelete={onDelete}
-        />
-      ))}
+      <LayoutGroup>
+        <AnimatePresence>
+          {list.map((item, index) => (
+            <motion.div key={item.id} {...ListItemMotionProps}>
+              <RecipientItem
+                item={item}
+                index={index}
+                onEdit={onEdit}
+                onDelete={onDelete}
+              />
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </LayoutGroup>
     </VStack>
   );
 }

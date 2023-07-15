@@ -84,7 +84,6 @@ export const LiabilityTypeEditModal = NiceModal.create(({ item }) => {
       onClose={onClose}
       onCloseComplete={modal.remove}
       scrollBehavior="inside"
-      blockScrollOnMount={false}
     >
       <ModalOverlay />
       <LiabilityTypeModalContent
