@@ -22,12 +22,12 @@ import { LiabilityTypesTab } from "./LiabilityTypesTab";
 import { GenerateModal } from "./GenerateModal";
 import { HamburgerIcon } from "@chakra-ui/icons";
 import { theme } from "./theme";
-import { clearDb, dbImportData, getExportData, openDb } from "./db";
 import { createRef, useEffect, useState } from "react";
 import { catchRethrow, downloadBlob } from "./util";
 import { GlobalToastContext, catchWithToast } from "./toastUtil";
 import NiceModal from "@ebay/nice-modal-react";
 import { PromptDialog } from "./PromptDialog";
+import { appStore } from "./db";
 
 const dataFileExtenstion = "daftar-pembayaran";
 
@@ -148,11 +148,11 @@ async function importData(file) {
     SyntaxError,
     "Berkas tidak valid"
   );
-  return dbImportData(data);
+  return appStore.importData(data);
 }
 
 async function exportData() {
-  const data = await getExportData();
+  const data = await appStore.exportData();
   const blob = new Blob([JSON.stringify(data)], {
     type: "application/json",
   });
@@ -168,7 +168,8 @@ function App() {
   const toast = useToast();
 
   useEffect(() => {
-    openDb()
+    appStore
+      .open()
       .then(() => {
         setDbState({ type: "opened" });
       })
@@ -215,7 +216,7 @@ function App() {
                     message: "Data akan hilang dan tidak bisa dikembalikan",
                     ctaColor: "red",
                     ctaText: "Tetap Bersihkan",
-                  }).then(() => clearDb())
+                  }).then(() => appStore.clear())
                 );
               }
             }}

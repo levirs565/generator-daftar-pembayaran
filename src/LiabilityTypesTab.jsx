@@ -20,7 +20,6 @@ import { RiMore2Fill } from "react-icons/ri";
 import { LiabilityTypeEditModal } from "./LiabilityTypeEditModal";
 import { RiPencilFill } from "react-icons/ri";
 import { RiDeleteBinFill } from "react-icons/ri";
-import { liabilityStore } from "./db";
 import { useLiveQuery } from "dexie-react-hooks";
 import { catchWithToast, useGlobalToast } from "./toastUtil";
 import { FloatingActionButton } from "./Fab";
@@ -28,6 +27,7 @@ import NiceModal from "@ebay/nice-modal-react";
 import { PromptDialog } from "./PromptDialog";
 import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
 import { ListItemMotionProps } from "./animation";
+import { appStore } from "./db";
 
 function LiabilityTypeItem({ liability, index, onEdit, onDelete }) {
   return (
@@ -109,7 +109,7 @@ export function LiabilityTypesTab() {
     catchWithToast(
       toast,
       "Gagal Mendapatkan Daftar Jenis Tanggungan",
-      liabilityStore.getAll()
+      appStore.getLiabilityTypeList()
     )
   );
 
@@ -123,7 +123,7 @@ export function LiabilityTypesTab() {
               toast,
               "Gagal Mengubah Jenis Tanggungan",
               NiceModal.show(LiabilityTypeEditModal, { item }).then((result) =>
-                liabilityStore.put(result.item)
+                appStore.putLiabilityType(result.item)
               )
             );
           }}
@@ -136,8 +136,7 @@ export function LiabilityTypesTab() {
                 message: `Apakah anda yakin menghapus jenis tanggungan "${item.name}"? Semua tanggungan yang berjenis ini akan ikut dihapus.`,
                 ctaColor: "red",
                 ctaText: "Hapus",
-              }).then(() => liabilityStore.delete(item))
-              // TODO: Ikus hapus tanggungan
+              }).then(() => appStore.deleteLiabilityType(item))
             );
           }}
         />
@@ -148,7 +147,7 @@ export function LiabilityTypesTab() {
             toast,
             "Gagal Menambahkan Jenis Tanggungan",
             NiceModal.show(LiabilityTypeEditModal, { item: null }).then(
-              (result) => liabilityStore.add(result.item)
+              (result) => appStore.putLiabilityType(result.item)
             )
           );
         }}

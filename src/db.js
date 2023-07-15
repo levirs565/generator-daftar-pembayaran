@@ -1,129 +1,158 @@
 import Dexie from "dexie";
 
-const db = new Dexie("liability");
+class AppStore {
+  #db;
+  #liabilityTypeTable;
+  #liabilityTable;
+  #recipientTable;
 
-db.version(1).stores({
-  liabilityType: "++id,name",
-  recipient: "++id,name",
-});
+  constructor() {
+    this.#db = new Dexie("liability");
 
-class LiabilityStore {
-  add(item) {
-    return db.liabilityType.add(item);
+    this.#db.version(1).stores({
+      liabilityType: "++id,name",
+      liability: "++id,recipientId,typeId",
+      recipient: "++id,name",
+    });
+
+    this.#liabilityTypeTable = this.#db.liabilityType;
+    this.#liabilityTable = this.#db.liability;
+    this.#recipientTable = this.#db.recipient;
   }
 
-  getAll() {
-    return db.liabilityType.toArray();
+  open() {
+    return this.#db.open();
   }
 
-  getAllExcept(idList) {
-    return db.liabilityType.where("id").noneOf(idList).toArray();
-  }
-
-  get(id) {
-    return db.liabilityType.get(id);
-  }
-
-  put(item) {
-    return db.liabilityType.put(item);
-  }
-
-  delete(item) {
-    return db.liabilityType.delete(item.id);
-  }
-
-  clear() {
-    return db.liabilityType.clear();
-  }
-
-  populateRaw(list) {
-    return db.liabilityType.bulkAdd(list);
-  }
-}
-
-class RecipientStore {
-  async #mapFromDb({ id, name, liabilityList }) {
+  async exportData() {
     return {
-      id,
-      name,
-      liabilityList: await Promise.all(
-        liabilityList.map(async ({ id, amount }) => ({
-          id,
-          name: (await liabilityStore.get(id)).name,
-          amount,
-        }))
-      ),
-    };
-  }
-  #mapToDb({ id, name, liabilityList }) {
-    return {
-      id,
-      name,
-      liabilityList: liabilityList.map(({ id, amount }) => ({
-        id,
-        amount,
-      })),
+      liabilityType: await this.#liabilityTypeTable.toArray(),
+      liability: await this.#liabilityTable.toArray(),
+      recipient: await this.#recipientTable.toArray(),
     };
   }
 
-  add(item) {
-    return db.recipient.add(this.#mapToDb(item));
-  }
-
-  async getAll() {
-    return await Promise.all(
-      (await db.recipient.toArray()).map((item) => this.#mapFromDb(item))
+  importData(data) {
+    return this.#db.transaction(
+      "rw",
+      [this.#liabilityTypeTable, this.#recipientTable, this.#liabilityTable],
+      () => {
+        this.#liabilityTypeTable
+          .clear()
+          .then(() => this.#liabilityTypeTable.bulkAdd(data.liabilityType));
+        this.#liabilityTable
+          .clear()
+          .then(() => this.#liabilityTable.bulkAdd(data.liability));
+        this.#recipientTable
+          .clear()
+          .then(() => this.#recipientTable.bulkAdd(data.recipient));
+      }
     );
   }
-  async get(id) {
-    return this.#mapFromDb(await db.recipient.get(id));
-  }
-
-  put(item) {
-    return db.recipient.put(this.#mapToDb(item));
-  }
-
-  delete(item) {
-    return db.recipient.delete(item.id);
-  }
 
   clear() {
-    return db.recipient.clear();
+    return this.#db.transaction(
+      "rw",
+      [this.#liabilityTypeTable, this.#recipientTable, this.#liabilityTable],
+      () => {
+        this.#liabilityTypeTable.clear();
+        this.#liabilityTable.clear();
+        this.#recipientTable.clear();
+      }
+    );
   }
 
-  populateRaw(list) {
-    return db.recipient.bulkAdd(list);
+  getLiabilityTypeList() {
+    return this.#liabilityTypeTable.toArray();
+  }
+
+  getLiabilityTypeListExcept(idList) {
+    return this.#liabilityTypeTable.where("id").noneOf(idList).toArray();
+  }
+
+  putLiabilityType(item) {
+    return this.#liabilityTypeTable.put(item);
+  }
+
+  deleteLiabilityType(item) {
+    return this.#db.transaction(
+      "rw",
+      [this.#liabilityTable, this.#liabilityTypeTable],
+      () => {
+        this.#liabilityTypeTable.delete(item.id);
+        this.#liabilityTable.where("typeId").equals(item.id).delete();
+      }
+    );
+  }
+
+  #getRecipientLiabilityCollection(id) {
+    return this.#liabilityTable.where("recipientId").equals(id);
+  }
+
+  async getRecipientList() {
+    return Promise.all(
+      (await this.#recipientTable.toArray()).map(async ({ name, id }) => ({
+        id,
+        name,
+        liabilityList: await Promise.all(
+          (
+            await this.#getRecipientLiabilityCollection(id).sortBy("index")
+          ).map(async ({ typeId, ...rest }) => ({
+            typeId,
+            name: (await this.#liabilityTypeTable.get(typeId)).name,
+            ...rest,
+          }))
+        ),
+      }))
+    );
+  }
+
+  async putRecipient({ id, name, liabilityList }) {
+    return this.#db.transaction(
+      "rw",
+      [this.#recipientTable, this.#liabilityTable],
+      async () => {
+        const recipientId = await this.#recipientTable.put({ id, name });
+
+        const lastLiabilityList = await this.#getRecipientLiabilityCollection(
+          recipientId
+        ).toArray();
+        const typeIdToId = new Map();
+        for (const { id, typeId } of lastLiabilityList)
+          typeIdToId.set(typeId, id);
+
+        await this.#liabilityTable.bulkPut(
+          liabilityList.map(({ id, typeId, amount }, index) => ({
+            id: id ? id : typeIdToId.get(typeId),
+            recipientId,
+            typeId,
+            amount,
+            index,
+          }))
+        );
+
+        const usedTypeId = new Set();
+        for (const { typeId } of liabilityList) usedTypeId.add(typeId);
+
+        await this.#liabilityTable.bulkDelete(
+          lastLiabilityList
+            .filter(({ typeId }) => !usedTypeId.has(typeId))
+            .map(({ id }) => id)
+        );
+      }
+    );
+  }
+
+  async deleteRecipient(item) {
+    return this.#db.transaction(
+      "rw",
+      [this.#recipientTable, this.#liabilityTable],
+      () => {
+        this.#recipientTable.delete(item.id);
+        this.#getRecipientLiabilityCollection(item.id).delete();
+      }
+    );
   }
 }
 
-export const liabilityStore = new LiabilityStore();
-export const recipientStore = new RecipientStore();
-
-export function openDb() {
-  return db.open();
-}
-
-export async function getExportData() {
-  return {
-    liabilityType: await liabilityStore.getAll(),
-    recipient: await recipientStore.getAll(),
-  };
-}
-
-export function dbImportData(data) {
-  return db.transaction("rw", [db.liabilityType, db.recipient], () => {
-    liabilityStore
-      .clear()
-      .then(() => liabilityStore.populateRaw(data.liabilityType));
-    recipientStore
-      .clear()
-      .then(() => recipientStore.populateRaw(data.recipient));
-  });
-}
-
-export function clearDb() {
-  return db.transaction("rw", [db.liabilityType, db.recipient], () => {
-    liabilityStore.clear();
-    recipientStore.clear();
-  });
-}
+export const appStore = new AppStore();

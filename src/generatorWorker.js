@@ -2,27 +2,27 @@ import PizZip from "pizzip";
 import Docxtemplater from "docxtemplater";
 import expressionParser from "docxtemplater/expressions";
 import { formatCurrency, getLiabilityTotal } from "./util";
-import { liabilityStore, recipientStore } from "./db";
+import { appStore } from "./db";
 
-async function mapRecipientLiability({ id, amount }) {
+async function mapRecipientLiability({ name, amount }) {
   return {
-    Nama: (await liabilityStore.get(id)).name,
+    Nama: name,
     Nominal: formatCurrency(amount),
   };
 }
 
-async function mapRecipient({ name, liabilityList }) {
+function mapRecipient({ name, liabilityList }) {
   return {
     Nama: name,
-    Tanggungan: await Promise.all(liabilityList.map(mapRecipientLiability)),
+    Tanggungan: liabilityList.map(mapRecipientLiability),
     Total: formatCurrency(getLiabilityTotal(liabilityList)),
   };
 }
 
 async function getData() {
-  const recipientList = await recipientStore.getAll();
+  const recipientList = await appStore.getRecipientList();
   return {
-    Daftar: await Promise.all(recipientList.map(mapRecipient)),
+    Daftar: recipientList.map(mapRecipient),
   };
 }
 

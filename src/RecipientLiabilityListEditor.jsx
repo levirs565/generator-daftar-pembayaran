@@ -11,10 +11,10 @@ import { CancelException, getItemById, removeItemById } from "./util";
 import { LiabilitySelect } from "./LiabilitySelect";
 import { AppCurrencyInput } from "./AppCurrencyInput";
 import { useLiveQuery } from "dexie-react-hooks";
-import { liabilityStore } from "./db";
 import { catchWithToast, useGlobalToast } from "./toastUtil";
 import NiceModal from "@ebay/nice-modal-react";
 import { PromptDialog } from "./PromptDialog";
+import { appStore } from "./db";
 
 function NestedCard({ children }) {
   return (
@@ -73,7 +73,7 @@ function RecipientLiabilityAdder({ typeList, onAdd }) {
           colorScheme="pink"
           isDisabled={selectedJenis === ""}
           onClick={() => {
-            onAdd(selectedJenis);
+            onAdd(typeList.find(({ id }) => id === selectedJenis));
             setSelectedJenis("");
           }}
           alignSelf="end"
@@ -92,7 +92,7 @@ export function RecipientLiabilityListEditor({ list, onUpdateList }) {
       catchWithToast(
         toast,
         "Gagal Mendapatkan Daftar Tanggungan yang Bisa Ditambahkan",
-        liabilityStore.getAllExcept(list.map((item) => item.id))
+        appStore.getLiabilityTypeListExcept(list.map(({ typeId }) => typeId))
       ),
     [list]
   );
@@ -100,7 +100,7 @@ export function RecipientLiabilityListEditor({ list, onUpdateList }) {
     <VStack alignItems="stretch" gap={2}>
       {list.map((item) => (
         <RecipientLiabilityItemEditor
-          key={item.id}
+          key={item.typeId}
           liability={item}
           onUpdate={(fn) =>
             onUpdateList((draft) => {
@@ -129,16 +129,10 @@ export function RecipientLiabilityListEditor({ list, onUpdateList }) {
       {unusedLiabilityTypeList && unusedLiabilityTypeList.length > 0 && (
         <RecipientLiabilityAdder
           typeList={unusedLiabilityTypeList}
-          onAdd={async (typeId) => {
-            const item = await catchWithToast(
-              toast,
-              "Gagal Menambahkan Tanggungan",
-              liabilityStore.get(typeId)
-            );
-            const { name, amount } = item;
+          onAdd={async ({ id, name, amount }) => {
             onUpdateList((draft) => {
               draft.push({
-                id: typeId,
+                typeId: id,
                 name,
                 amount,
               });

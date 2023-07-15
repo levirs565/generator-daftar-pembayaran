@@ -22,13 +22,13 @@ import { RiDeleteBinFill } from "react-icons/ri";
 import { RiMore2Fill } from "react-icons/ri";
 import { RecipientEditModal } from "./RecipientEditModal";
 import { useLiveQuery } from "dexie-react-hooks";
-import { recipientStore } from "./db";
 import { catchWithToast, useGlobalToast } from "./toastUtil";
 import { FloatingActionButton } from "./Fab";
 import NiceModal from "@ebay/nice-modal-react";
 import { PromptDialog } from "./PromptDialog";
 import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
 import { ListItemMotionProps } from "./animation";
+import { appStore } from "./db";
 
 function RecipientItem({ item, index, onEdit, onDelete }) {
   return (
@@ -120,7 +120,7 @@ export function RecipientListTab() {
     catchWithToast(
       toast,
       "Gagal Mendapatkan Daftar Penerima",
-      recipientStore.getAll()
+      appStore.getRecipientList()
     )
   );
 
@@ -134,7 +134,7 @@ export function RecipientListTab() {
               toast,
               "Gagal Mengubah Penerima",
               NiceModal.show(RecipientEditModal, { item }).then((result) =>
-                recipientStore.put(result.item)
+                appStore.putRecipient(result.item)
               )
             );
           }}
@@ -147,7 +147,7 @@ export function RecipientListTab() {
                 message: `Apakah anda yakin menghapus penerima "${item.name}"?`,
                 ctaColor: "red",
                 ctaText: "Hapus",
-              }).then(() => recipientStore.delete(item))
+              }).then(() => appStore.deleteRecipient(item))
             );
           }}
         />
@@ -158,7 +158,7 @@ export function RecipientListTab() {
             toast,
             "Gagal Menambahkan Penerima",
             NiceModal.show(RecipientEditModal, { item: null }).then((result) =>
-              recipientStore.add(result.item)
+              appStore.putRecipient(result.item)
             )
           );
         }}

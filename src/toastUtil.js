@@ -6,6 +6,7 @@ export async function catchWithToast(toast, title, promise) {
     return await promise;
   } catch (error) {
     if (error instanceof CancelException) return;
+    console.error(error);
     toast({
       title: title,
       description: error.message,
@@ -13,7 +14,6 @@ export async function catchWithToast(toast, title, promise) {
       duration: 2000,
       isClosable: true,
     });
-    console.error(error);
   }
 }
 
