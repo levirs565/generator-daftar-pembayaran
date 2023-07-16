@@ -4,7 +4,7 @@ import expressionParser from "docxtemplater/expressions";
 import { formatCurrency, getLiabilityTotal } from "./util";
 import { appStore } from "./db";
 
-async function mapRecipientLiability({ name, amount }) {
+function mapRecipientLiability({ name, amount }) {
   return {
     Nama: name,
     Nominal: formatCurrency(amount),
