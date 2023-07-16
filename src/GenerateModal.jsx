@@ -116,7 +116,7 @@ export const GenerateModal = NiceModal.create(() => {
                 onChange={(e) => setFile(e.target.files[0])}
               />
             </HStack>
-            <Link isExternal alignSelf="end">
+            <Link isExternal href="/template.docx" alignSelf="end">
               Unduh Contoh Template <ExternalLinkIcon mx={2} />
             </Link>
             <Text alignSelf="start">
