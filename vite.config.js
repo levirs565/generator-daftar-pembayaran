@@ -13,7 +13,7 @@ export default defineConfig({
       },
       manifest: {
         name: "Generator Daftar Pembayaran",
-        short_name: "DaftarPembayaran",
+        short_name: "Daftar Pembayaran",
         description: "Aplikasi untuk Menghasilkan Dokumen Daftar Pembayaran",
         theme_color: "#97266D",
         icons: [
