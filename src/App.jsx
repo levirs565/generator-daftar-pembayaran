@@ -181,8 +181,8 @@ function App() {
 
   return (
     <ChakraProvider theme={theme}>
-      <NiceModal.Provider>
-        <GlobalToastContext.Provider value={toast}>
+      <GlobalToastContext.Provider value={toast}>
+        <NiceModal.Provider>
           <AppBar
             headerHeight={headerHeight}
             onGenereteItemClick={() => {
@@ -224,8 +224,8 @@ function App() {
           />
           {dbState.type === "opened" && <AppMain headerHeight={headerHeight} />}
           {dbState.type === "error" && <AppDBError message={dbState.message} />}
-        </GlobalToastContext.Provider>
-      </NiceModal.Provider>
+        </NiceModal.Provider>
+      </GlobalToastContext.Provider>
     </ChakraProvider>
   );
 }
