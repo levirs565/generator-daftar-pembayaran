@@ -31,6 +31,10 @@ export function formatCurrency(amount) {
   return numberFormat.format(amount);
 }
 
+export function formatDate(dayjs) {
+  return dayjs.format("HH-mm-ss DD-MM-YYYY");
+}
+
 export function downloadBlob(blob, name) {
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");

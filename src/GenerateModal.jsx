@@ -16,9 +16,10 @@ import {
   VisuallyHiddenInput,
 } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
-import { downloadBlob } from "./util";
+import { downloadBlob, formatDate } from "./util";
 import NiceModal, { useModal } from "@ebay/nice-modal-react";
 import { useGlobalToast } from "./toastUtil";
+import dayjs from "dayjs";
 
 const workerResultEvent = "generateWorkerResult";
 
@@ -64,7 +65,7 @@ export const GenerateModal = NiceModal.create(() => {
       setIsProcessing(false);
       const detail = e.detail;
       if (detail.success) {
-        const name = `Daftar Pembayaran ${Date.now()}.docx`;
+        const name = `Daftar Pembayaran ${formatDate(dayjs())}.docx`;
         downloadBlob(detail.blob, name);
         modal.hide();
       } else {

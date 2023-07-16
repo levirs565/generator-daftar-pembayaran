@@ -23,11 +23,12 @@ import { GenerateModal } from "./GenerateModal";
 import { HamburgerIcon } from "@chakra-ui/icons";
 import { theme } from "./theme";
 import { createRef, useEffect, useState } from "react";
-import { catchRethrow, downloadBlob } from "./util";
+import { catchRethrow, downloadBlob, formatDate } from "./util";
 import { GlobalToastContext, catchWithToast } from "./toastUtil";
 import NiceModal from "@ebay/nice-modal-react";
 import { PromptDialog } from "./PromptDialog";
 import { appStore } from "./db";
+import dayjs from "dayjs";
 
 const dataFileExtenstion = "daftar-pembayaran";
 
@@ -158,7 +159,7 @@ async function exportData() {
   });
   downloadBlob(
     blob,
-    `Data Daftar Pembayaran ${Date.now()}.${dataFileExtenstion}`
+    `Data Daftar Pembayaran ${formatDate(dayjs())}.${dataFileExtenstion}`
   );
 }
 
