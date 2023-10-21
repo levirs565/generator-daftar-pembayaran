@@ -11,7 +11,7 @@ class AppStore {
 
     this.#db.version(1).stores({
       liabilityType: "++id,name",
-      liability: "++id,[recipientId+typeId]",
+      liability: "++id,[recipientId+typeId],typeId",
       recipient: "++id,name",
     });
 
